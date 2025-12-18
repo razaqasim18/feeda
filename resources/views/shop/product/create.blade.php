@@ -612,7 +612,7 @@
 
                     // Check if the row already exists
                     if (!$(`#selectedColorRow_${colorId}`).length) {
-
+                   
                         $('#selectedColorsTableBody').append(`
                             <tr id="selectedColorRow_${colorId}" style="display: table-row !important">
                                 <td>
@@ -638,7 +638,7 @@
                                         />
 
                                         <input type="text" name="color[${colorId}][quantity]"
-                                            class="form-control"
+                                            class="form-control" value="0"
                                             oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/^(\d*\.\d{0,2}|\d*)$/, '$1'); " 
                                         />
                                     </div>
@@ -823,7 +823,7 @@
             const code = document.getElementById('barcode');
             code.value = Math.floor(Math.random() * 900000) + 100000;
         }
-
+        
         function generateCoded() {
             const code = document.getElementById('barcode');
             return Math.floor(Math.random() * 900000) + 100000;

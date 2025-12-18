@@ -795,7 +795,7 @@
                                             oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/^(\d*\.\d{0,2}|\d*)$/, '$1');"
                                         />
                                         <input type="text" name="color[${colorId}][quantity]"
-                                            class="form-control"
+                                            class="form-control" value="0"
                                             oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/^(\d*\.\d{0,2}|\d*)$/, '$1'); " 
                                         />
 
