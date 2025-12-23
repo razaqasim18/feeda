@@ -390,6 +390,17 @@
     </li>
 @endhasPermission
 
+<li>
+    <a class="menu {{ $request->routeIs('admin.birthday.coupon.*') ? 'active' : '' }}"
+        href="{{ route('admin.birthday.coupon.index') }}">
+        <span>
+            <img class="menu-icon" src="{{ asset('assets/icons-admin/coupon.svg') }}" alt="icon"
+                loading="lazy" />
+            {{ __('Birthday Coupon Code') }}
+        </span>
+    </a>
+</li>
+
 @hasPermission('admin.customerNotification.index')
     <!--- notification--->
     <li>

@@ -4,6 +4,7 @@ use App\Events\BirthdayCouponEvent;
 use App\Http\Controllers\Admin\AdController;
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\BirthdayCouponController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\BusinessSetupController;
@@ -292,6 +293,10 @@ Route::name('admin.')->group(function () {
             Route::put('/coupon/{coupon}/update', 'update')->name('coupon.update');
             Route::get('/coupon/{coupon}/destroy', 'destroy')->name('coupon.destroy');
             Route::get('/coupon/{coupon}/toggle', 'statusToggle')->name('coupon.toggle');
+        });
+
+        Route::controller(BirthdayCouponController::class)->group(function () {
+            Route::get('/birthday-coupons', 'index')->name('birthday.coupon.index');
         });
 
         // Logout

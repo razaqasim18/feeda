@@ -199,8 +199,13 @@
                                 </div>
                             </div>
                         </div>
-
+                        &nbsp;
                         <!-- Title -->
+                        <label
+                            v-if="product?.quantity === 0"
+                            class="bg-gray-500 text-white text-xs px-2 py-1 font-semibold uppercase"
+                        > Sold Out
+                        </label>
                         <div class="mt-3 text-slate-950 text-2xl font-medium leading-normal">
                             {{ product.name }}
                         </div>
@@ -238,7 +243,7 @@
                             <div class="w-[1px] h-4 bg-slate-200"></div>
 
                             <!-- Share -->
-                            <button class="flex items-center gap-2 border-none">
+                            <button @click="copyUrl" class="flex items-center gap-2 border-none">
                                 <ShareIcon class="w-[18px] text-slate-600" />
                                 <span class="text-slate-800 text-base font-normal leading-normal">
                                     {{ $t("Share") }}
@@ -304,14 +309,30 @@
 
                                 <div class="flex flex-wrap items-center gap-3">
                                     <div v-for="color in product.colors" :key="color.id" class="relative">
-                                        <input @change="updateImage(color.image)" type="radio" name="color"
-                                            :id="'color-' + color.id" class="peer hidden change-image-btn" :value="color.id"
-                                            v-model="formData.color" />
-                                        <label :for="'color-' + color.id"
-                                            class="px-2 py-1 flex justify-center items-center border-2 border-slate-200 rounded-md cursor-pointer peer-checked:border-primary peer-checked:bg-primary-100">
+                                        <input
+                                            @change="updateImage(color.image)"
+                                            type="radio"
+                                            name="color"
+                                            :id="'color-' + color.id"
+                                            class="peer hidden change-image-btn"
+                                            :value="color.id"
+                                            v-model="formData.color"
+                                            :disabled="color.quantity <= 0"
+                                        />
+
+                                        <label
+                                            :for="'color-' + color.id"
+                                            :class="[
+                                                'px-2 py-1 flex justify-center items-center border-2 rounded-md',
+                                                color.quantity <= 0
+                                                    ? 'cursor-not-allowed border-slate-300 bg-gray-200 opacity-60 disabled'
+                                                    : 'cursor-pointer border-slate-200 peer-checked:border-primary peer-checked:bg-primary-100',
+                                            ]"
+                                        >
                                             {{ color.name }}
                                         </label>
                                     </div>
+
 
                                     <div v-if="!product.colors" class="text-slate-500 text-base font-normal">
                                         {{ $t("N/A") }}
@@ -320,7 +341,7 @@
                             </div>
                         </div>
 
-                        <div class="flex flex-wrap gap-4">
+                        <div v-if="product?.quantity > 0" class="flex flex-wrap gap-4">
                             <!-- Quantity Increase Or Decrease -->
                             <!-- <div v-if="cartProduct"
                                 class="p-2 rounded-[10px] border border-slate-100 inline-flex gap-4">
@@ -339,24 +360,32 @@
                             </div> -->
 
                             <!-- Add to Cart -->
-                            <button
-                                class="grow max-w-56 justify-center items-center text-primary flex gap-2 px-6 py-4 rounded-[10px] border border-primary"
-                                @click="addToCart">
-                                <div class="w-5 h-5">
-                                    <BagIcon />
-                                </div>
-                                <div class="text-base font-medium leading-normal">
-                                    {{ $t("Add to Cart") }}
-                                </div>
-                            </button>
+                            <!-- <span v-if="product?.quantity > 0"> -->
+                                <button
+                                    class="grow max-w-56 justify-center items-center text-primary flex gap-2 px-6 py-4 rounded-[10px] border border-primary"
+                                    @click="addToCart">
+                                    <div class="w-5 h-5">
+                                        <BagIcon />
+                                    </div>
+                                    <div class="text-base font-medium leading-normal">
+                                        {{ $t("Add to Cart") }}
+                                    </div>
+                                </button>
 
-                            <!-- Buy Now -->
-                            <button
-                                class="grow text-white bg-primary px-6 py-4 rounded-[10px] border border-primary max-w-[50%]"
-                                @click="buyNow">
-                                <span class="text-base font-medium leading-normal">
-                                    {{ $t("Buy Now") }}
-                                </span>
+                                <!-- Buy Now -->
+                                <button
+                                    class="grow text-white bg-primary px-6 py-4 rounded-[10px] border border-primary max-w-[50%]"
+                                    @click="buyNow">
+                                    <span class="text-base font-medium leading-normal">
+                                        {{ $t("Buy Now") }}
+                                    </span>
+                                </button>
+                            <!-- </span>  -->
+                          
+                        </div>
+                        <div v-else class="flex flex-wrap gap-4">
+                            <button class="grow max-w-100 justify-center items-center text-primary flex gap-2 px-6 py-4 rounded-[10px] bg-gray-500 text-white text-xs px-2 py-1 font-semibold uppercase cursor-not-allowed">
+                                Sold Out
                             </button>
                         </div>
                     </div>
@@ -578,6 +607,7 @@ const review = ref(false);
 
 const cartProduct = ref(null);
 const isLoading = ref(true);
+const copied = ref(false);
 
 onMounted(() => {
     fetchProductDetails();
@@ -588,6 +618,33 @@ onMounted(() => {
 watch(formData, () => {
     calculateProductPrice();
 }, { deep: true });
+
+
+const copyUrl = async () => {
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    const content = {
+        component: ToastSuccessMessage,
+        props: {
+            title: 'Product Copied',
+            message: 'Product Url is copied in clipboard successfully',
+        },
+    };
+    toast(content, {
+      type: "default",
+      hideProgressBar: true,
+      icon: false,
+      position: "top-right",
+      toastClassName: "vue-toastification-alert",
+      timeout: 3000
+    });
+
+  } catch (e) {
+    console.error("Failed to copy URL", e);
+    toast("Failed to copy URL!", { type: "error" });
+  }
+};
+
 
 const calculateProductPrice = () => {
     var colorPrice = 0;
@@ -613,6 +670,7 @@ const calculateProductPrice = () => {
 
     discountPercentage.value = (((mainPrice.value - productPrice.value) / mainPrice.value) * 100).toFixed(2);
 }
+
 
 const buyNow = () => {
     if (authStore.token === null) {

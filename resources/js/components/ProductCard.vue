@@ -207,9 +207,9 @@ const favoriteAddOrRemove = () => {
 }
 
 const showProductDetails = () => {
-    if (props.product.quantity > 0) {
+    // if (props.product.quantity > 0) {
         router.push({ name: 'productDetails', params: { id: props.product.id } })
-    }
+    // }
 }
 
 </script>

@@ -18,6 +18,7 @@ class ColorResource extends JsonResource
         $lang = request()->header('accept-language') ?? 'en';
 
         $price = $this->pivot->price ?? 0;
+        $quantity = $this->pivot->quantity ?? 0;
         $product = ProductRepository::find($this->pivot?->product_id);
 
         // Calculate VAT extra price
@@ -38,6 +39,7 @@ class ColorResource extends JsonResource
             'name' => $translation ? $translation->name : $this->name,
             'color_code' => $this->color_code,
             'price' => (float) number_format($price, 2, '.', ''),
+            'quantity' => $quantity,
             'image' => $this->pivot && $this->pivot->image
                 ? asset('storage/' . $this->pivot->image)
                 : asset('default/default.jpg'),
