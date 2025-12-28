@@ -9,9 +9,9 @@
 
                     <div class="grow w-full overflow-hidden">
                         <div class="space-x-1 text-slate-600 text-sm font-normal truncate">
-                            <router-link to="/">{{ $t("Home") }}</router-link>
+                            <router-link to="/">{{ $t('Home') }}</router-link>
                             <span>/</span>
-                            <span>{{ product.name }} </span>
+                            <span>{{ product . name }} </span>
                         </div>
                     </div>
                 </div>
@@ -21,7 +21,7 @@
                         <div class="w-full">
                             <div class="bg-slate-50 rounded-xl border border-slate-100 px-6">
 
-                                <swiper id="customdiv" :spaceBetween="10" :thumbs="{ swiper: thumbsSwiper }"
+                                <swiper v-show="showCustom" id="customdiv" :spaceBetween="10" :thumbs="{ swiper: thumbsSwiper }"
                                     :modules="modules" class="product-details-slider">
                                     <swiper-slide class="max-h-[448px] h-auto">
                                         <div class="zoom-container h-full" @mousemove="handleMouseMove"
@@ -33,7 +33,7 @@
                                     </swiper-slide>
                                 </swiper>
 
-                                <swiper id="swipperdiv" :spaceBetween="10" :thumbs="{ swiper: thumbsSwiper }"
+                                <swiper v-show="!showCustom" id="swipperdiv" :spaceBetween="10" :thumbs="{ swiper: thumbsSwiper }"
                                     :modules="modules" class="product-details-slider">
                                     <swiper-slide v-for="thumbnail in product.thumbnails" :key="thumbnail.id"
                                         class="max-h-[448px] h-auto">
@@ -58,9 +58,9 @@
 
                             </div>
                             <div class="px-1 mt-2">
-                                <swiper @swiper="setThumbsSwiper" :spaceBetween="10" :slidesPerView="4" :freeMode="true"
-                                    :navigation="true" :watchSlidesProgress="true" :modules="modules"
-                                    class="product-details-thumbnail">
+                                <swiper @swiper="setThumbsSwiper" :spaceBetween="10" :slidesPerView="4"
+                                    :freeMode="true" :navigation="true" :watchSlidesProgress="true"
+                                    :modules="modules" class="product-details-thumbnail">
                                     <swiper-slide v-for="thumbnail in product.thumbnails" :key="thumbnail.id">
                                         <img v-if="thumbnail.thumbnail" :src="thumbnail.thumbnail" alt=""
                                             class="h-full w-full object-cover changeshowcolordiv" />
@@ -72,8 +72,8 @@
                                             </video>
                                             <div v-else
                                                 class="h-full w-full overflow-hidden flex justify-center items-center">
-                                                <img :src="'/assets/icons/video-player.svg'" alt="" width="70"
-                                                    height="70">
+                                                <img :src="'/assets/icons/video-player.svg'" alt=""
+                                                    width="70" height="70">
                                             </div>
                                         </div>
 
@@ -90,13 +90,13 @@
                             <div
                                 class="px-4 sm:px-8 py-2 bg-gradient-to-l from-primary to-primary-800 w-full sm:w-auto">
                                 <div class="text-white text-sm sm:text-base font-bold leading-normal">
-                                    {{ $t("Flash Sale") }}
+                                    {{ $t('Flash Sale') }}
                                 </div>
                             </div>
 
                             <div class="h-full flex justify-center items-center flex-wrap pb-2 sm:pb-0">
                                 <div class="text-center text-primary text-sm font-normal leading-tight pr-2">
-                                    {{ $t("Ending in") }}
+                                    {{ $t('Ending in') }}
                                 </div>
 
                                 <!-- Days, Hours, Minutes, Seconds -->
@@ -108,7 +108,7 @@
                                         </div>
                                         <div
                                             class="text-center text-[#687387] text-[9.14px] font-normal font-['Inter'] leading-none">
-                                            {{ $t("Days") }}
+                                            {{ $t('Days') }}
                                         </div>
                                     </div>
 
@@ -119,7 +119,7 @@
                                         </div>
                                         <div
                                             class="text-center text-[#687387] text-[9.14px] font-normal font-['Inter'] leading-none">
-                                            {{ $t("Hours") }}
+                                            {{ $t('Hours') }}
                                         </div>
                                     </div>
 
@@ -130,7 +130,7 @@
                                         </div>
                                         <div
                                             class="text-center text-[#687387] text-[9.14px] font-normal font-['Inter'] leading-none">
-                                            {{ $t("Minutes") }}
+                                            {{ $t('Minutes') }}
                                         </div>
                                     </div>
 
@@ -141,7 +141,7 @@
                                         </div>
                                         <div
                                             class="text-center text-[#687387] text-[9.14px] font-normal font-['Inter'] leading-none">
-                                            {{ $t("Seconds") }}
+                                            {{ $t('Seconds') }}
                                         </div>
                                     </div>
                                 </div>
@@ -151,27 +151,27 @@
 
                         <!-- Brand -->
                         <span class="text-primary text-xs font-normal leading-none px-1.5 py-1 bg-primary-50 rounded">
-                            {{ product.brand ?? "Unknown Brand" }}
+                            {{ product . brand ?? 'Unknown Brand' }}
                         </span>
 
                         <div class="block md:hidden">
                             <!-- Size -->
                             <div v-if="product.sizes?.length > 0" class="flex items-center gap-3 py-4">
                                 <div class="w-[40px] md:w-[88px] text-slate-600 text-base font-normal leading-normal">
-                                    {{ $t("Size") }}
+                                    {{ $t('Size') }}
                                 </div>
 
                                 <div class="flex flex-wrap items-center gap-3">
                                     <div v-for="size in product.sizes" :key="size.id" class="relative">
-                                        <input type="radio" name="size" :id="'size-' + size.id" class="peer hidden"
-                                            :value="size.id" v-model="formData.size" />
+                                        <input type="radio" name="size" :id="'size-' + size.id"
+                                            class="peer hidden" :value="size.id" v-model="formData.size" />
                                         <label :for="'size-' + size.id"
                                             class="min-w-11 w-auto h-9 flex justify-center items-center border-2 border-slate-200 rounded-md cursor-pointer peer-checked:border-primary peer-checked:bg-primary-100 px-2">
-                                            {{ size.name }}
+                                            {{ size . name }}
                                         </label>
                                     </div>
                                     <div v-if="!product.sizes" class="text-slate-500 text-base font-normal">
-                                        {{ $t("N/A") }}
+                                        {{ $t('N/A') }}
                                     </div>
                                 </div>
                             </div>
@@ -179,40 +179,46 @@
                             <!-- Color -->
                             <div v-if="product.colors?.length > 0" class="flex items-center gap-3 py-4">
                                 <div class="w-[40px] md:w-[88px] text-slate-600 text-base font-normal leading-normal">
-                                    {{ $t("Color") }}
+                                    {{ $t('Color') }}
                                 </div>
 
                                 <div class="flex flex-wrap items-center gap-3">
                                     <div v-for="color in product.colors" :key="color.id" class="relative">
                                         <input @change="updateImage(color.image)" type="radio" name="color"
-                                            :id="'color-' + color.id" class="peer hidden change-image-btn" :value="color.id"
-                                            v-model="formData.color" />
+                                            class="peer hidden" :id="'color-' + color.id" :value="Number(color.id)"
+                                            v-model.number="formData.color" :disabled="color.quantity <= 0">
+
                                         <label :for="'color-' + color.id"
-                                            class="px-2 py-1 flex justify-center items-center border-2 border-slate-200 rounded-md cursor-pointer peer-checked:border-primary peer-checked:bg-primary-100">
+                                            :class="[
+                                                'px-2 py-1 flex justify-center items-center border-2 rounded-md',
+                                                color.quantity <= 0 ?
+                                                  'cursor-not-allowed border-slate-300 bg-gray-200 opacity-60 disabled' :
+                                                'cursor-pointer border-slate-200 peer-checked:border-primary peer-checked:bg-primary-100',
+                                           ]">
                                             {{ color.name }}
                                         </label>
                                     </div>
 
+
                                     <div v-if="!product.colors" class="text-slate-500 text-base font-normal">
-                                        {{ $t("N/A") }}
+                                        {{ $t('N/A') }}
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                         &nbsp;
                         <!-- Title -->
-                        <label
-                            v-if="product?.quantity === 0"
-                            class="bg-gray-500 text-white text-xs px-2 py-1 font-semibold uppercase"
-                        > Sold Out
+                        <label v-if="product?.quantity === 0"
+                            class="bg-gray-500 text-white text-xs px-2 py-1 font-semibold uppercase"> Sold Out
                         </label>
                         <div class="mt-3 text-slate-950 text-2xl font-medium leading-normal">
-                            {{ product.name }}
+                            {{ product . name }}
                         </div>
 
                         <!-- Short Description -->
                         <div class="mt-2 text-slate-700 text-base font-normal leading-normal">
-                            {{ product.short_description }}
+                            {{ product . short_description }}
                         </div>
 
                         <!-- Rating  review, sold and share -->
@@ -222,14 +228,14 @@
                             <!--    <div class="flex">-->
                             <!--        <StarIcon class="w-6 h-6 text-amber-500" />-->
                             <!--        <StarIcon v-for="i in 4" :key="i" class="w-6 h-6 2xl:block hidden" :class="i < product.rating ? 'text-amber-500' : 'text-gray-300'-->
-                            <!--            " />-->
+                                                        <!--            " />-->
                             <!--    </div>-->
                             <!--    <div class="text-slate-800 text-base font-bold">-->
-                            <!--        {{ product.rating }}-->
+                            <!--        {{ product . rating }}-->
                             <!--    </div>-->
                             <!-- Review -->
                             <!--    <div class="text-slate-500 text-base font-normal">-->
-                            <!--        {{ product.total_reviews }} {{ $t("Review") }}-->
+                            <!--        {{ product . total_reviews }} {{ $t('Review') }}-->
                             <!--    </div>-->
                             <!--</div>-->
 
@@ -237,7 +243,7 @@
 
                             <!-- Sold -->
                             <!--<div class="text-slate-800 text-base font-normal leading-normal">-->
-                            <!--    {{ product.total_sold }} {{ $t("Sold") }}-->
+                            <!--    {{ product . total_sold }} {{ $t('Sold') }}-->
                             <!--</div>-->
 
                             <div class="w-[1px] h-4 bg-slate-200"></div>
@@ -246,7 +252,7 @@
                             <button @click="copyUrl" class="flex items-center gap-2 border-none">
                                 <ShareIcon class="w-[18px] text-slate-600" />
                                 <span class="text-slate-800 text-base font-normal leading-normal">
-                                    {{ $t("Share") }}
+                                    {{ $t('Share') }}
                                 </span>
                             </button>
 
@@ -263,19 +269,19 @@
                         <div class="flex items-center gap-3 py-4 border-b border-slate-200 flex-wrap">
                             <!-- discount Price -->
                             <div class="text-primary text-3xl font-bold leading-9">
-                                {{ masterStore.showCurrency(parseFloat(productPrice).toFixed(2)) }}
+                                {{ masterStore . showCurrency(parseFloat(productPrice) . toFixed(2)) }}
                             </div>
 
                             <!-- Price -->
                             <div v-if="product.discount_price > 0"
                                 class="text-slate-400 text-2xl font-normal line-through leading-loose">
-                                {{ masterStore.showCurrency(parseFloat(mainPrice).toFixed(2)) }}
+                                {{ masterStore . showCurrency(parseFloat(mainPrice) . toFixed(2)) }}
                             </div>
 
                             <!-- discount -->
                             <div v-if="discountPercentage > 0"
                                 class="px-2 py-1 bg-red-500 rounded-2xl text-white text-base font-medium">
-                                {{ discountPercentage }}% {{ $t("OFF") }}
+                                {{ discountPercentage }}% {{ $t('OFF') }}
                             </div>
                         </div>
 
@@ -283,20 +289,20 @@
                             <!-- Size -->
                             <div v-if="product.sizes?.length > 0" class="flex items-center gap-3 py-4">
                                 <div class="w-[40px] md:w-[88px] text-slate-600 text-base font-normal leading-normal">
-                                    {{ $t("Size") }}
+                                    {{ $t('Size') }}
                                 </div>
 
                                 <div class="flex flex-wrap items-center gap-3">
                                     <div v-for="size in product.sizes" :key="size.id" class="relative">
-                                        <input type="radio" name="size" :id="'size-' + size.id" class="peer hidden"
-                                            :value="size.id" v-model="formData.size" />
+                                        <input type="radio" name="size" :id="'size-' + size.id"
+                                            class="peer hidden" :value="size.id" v-model="formData.size" />
                                         <label :for="'size-' + size.id"
                                             class="min-w-11 w-auto h-9 flex justify-center items-center border-2 border-slate-200 rounded-md cursor-pointer peer-checked:border-primary peer-checked:bg-primary-100 px-2">
-                                            {{ size.name }}
+                                            {{ size . name }}
                                         </label>
                                     </div>
                                     <div v-if="!product.sizes" class="text-slate-500 text-base font-normal">
-                                        {{ $t("N/A") }}
+                                        {{ $t('N/A') }}
                                     </div>
                                 </div>
                             </div>
@@ -304,38 +310,30 @@
                             <!-- Color -->
                             <div v-if="product.colors?.length > 0" class="flex items-center gap-3 py-4">
                                 <div class="w-[40px] md:w-[88px] text-slate-600 text-base font-normal leading-normal">
-                                    {{ $t("Color") }}
+                                    {{ $t('Color') }}
                                 </div>
 
                                 <div class="flex flex-wrap items-center gap-3">
                                     <div v-for="color in product.colors" :key="color.id" class="relative">
-                                        <input
-                                            @change="updateImage(color.image)"
-                                            type="radio"
-                                            name="color"
-                                            :id="'color-' + color.id"
-                                            class="peer hidden change-image-btn"
-                                            :value="color.id"
-                                            v-model="formData.color"
-                                            :disabled="color.quantity <= 0"
-                                        />
+                                        <input @change="updateImage(color.image)" type="radio" name="color"
+                                            :id="'color-' + color.id" class="peer hidden change-image-btn"
+                                            :value="color.id" v-model="formData.color"
+                                            :disabled="color.quantity <= 0" />
 
-                                        <label
-                                            :for="'color-' + color.id"
+                                        <label :for="'color-' + color.id"
                                             :class="[
                                                 'px-2 py-1 flex justify-center items-center border-2 rounded-md',
-                                                color.quantity <= 0
-                                                    ? 'cursor-not-allowed border-slate-300 bg-gray-200 opacity-60 disabled'
-                                                    : 'cursor-pointer border-slate-200 peer-checked:border-primary peer-checked:bg-primary-100',
-                                            ]"
-                                        >
+                                                color.quantity <= 0 ?
+                                                'cursor-not-allowed border-slate-300 bg-gray-200 opacity-60 disabled' :
+                                                'cursor-pointer border-slate-200 peer-checked:border-primary peer-checked:bg-primary-100',
+                                            ]">
                                             {{ color.name }}
                                         </label>
                                     </div>
 
 
                                     <div v-if="!product.colors" class="text-slate-500 text-base font-normal">
-                                        {{ $t("N/A") }}
+                                        {{ $t('N/A') }}
                                     </div>
                                 </div>
                             </div>
@@ -351,7 +349,7 @@
 
                                 <div
                                     class="w-6 flex items-center justify-center text-center text-slate-950 text-base font-medium leading-normal">
-                                    {{ cartProduct.quantity }}
+                                    {{ cartProduct . quantity }}
                                 </div>
 
                                 <button class="bg-slate-100 p-2 rounded" @click="incrementQty">
@@ -361,30 +359,31 @@
 
                             <!-- Add to Cart -->
                             <!-- <span v-if="product?.quantity > 0"> -->
-                                <button
-                                    class="grow max-w-56 justify-center items-center text-primary flex gap-2 px-6 py-4 rounded-[10px] border border-primary"
-                                    @click="addToCart">
-                                    <div class="w-5 h-5">
-                                        <BagIcon />
-                                    </div>
-                                    <div class="text-base font-medium leading-normal">
-                                        {{ $t("Add to Cart") }}
-                                    </div>
-                                </button>
+                            <button
+                                class="grow max-w-56 justify-center items-center text-primary flex gap-2 px-6 py-4 rounded-[10px] border border-primary"
+                                @click="addToCart">
+                                <div class="w-5 h-5">
+                                    <BagIcon />
+                                </div>
+                                <div class="text-base font-medium leading-normal">
+                                    {{ $t('Add to Cart') }}
+                                </div>
+                            </button>
 
-                                <!-- Buy Now -->
-                                <button
-                                    class="grow text-white bg-primary px-6 py-4 rounded-[10px] border border-primary max-w-[50%]"
-                                    @click="buyNow">
-                                    <span class="text-base font-medium leading-normal">
-                                        {{ $t("Buy Now") }}
-                                    </span>
-                                </button>
+                            <!-- Buy Now -->
+                            <button
+                                class="grow text-white bg-primary px-6 py-4 rounded-[10px] border border-primary max-w-[50%]"
+                                @click="buyNow">
+                                <span class="text-base font-medium leading-normal">
+                                    {{ $t('Buy Now') }}
+                                </span>
+                            </button>
                             <!-- </span>  -->
-                          
+
                         </div>
                         <div v-else class="flex flex-wrap gap-4">
-                            <button class="grow max-w-100 justify-center items-center text-primary flex gap-2 px-6 py-4 rounded-[10px] bg-gray-500 text-white text-xs px-2 py-1 font-semibold uppercase cursor-not-allowed">
+                            <button
+                                class="grow max-w-100 justify-center items-center text-primary flex gap-2 px-6 py-4 rounded-[10px] bg-gray-500 text-white text-xs px-2 py-1 font-semibold uppercase cursor-not-allowed">
                                 Sold Out
                             </button>
                         </div>
@@ -396,17 +395,20 @@
                 </div>
 
                 <div class="flex items-center gap-8 flex-wrap border-b mt-3 mb-4 xl:my-6">
-                    <button class="py-3 transition text-base font-medium leading-normal border-b" :class="aboutProduct
-                        ? 'text-primary border-primary'
-                        : 'text-slate-600 border-transparent'" @click="aboutProduct = true; review = false;">
-                        {{ $t("About Product") }}
+                    <button class="py-3 transition text-base font-medium leading-normal border-b"
+                        :class="aboutProduct
+                            ?
+                            'text-primary border-primary' :
+                            'text-slate-600 border-transparent'"
+                        @click="aboutProduct = true; review = false;">
+                        {{ $t('About Product') }}
                     </button>
 
                     <!-- <button class="py-3 transition text-base font-medium leading-normal border-b" :class="review
-                        ? 'text-primary border-primary'
-                        : 'text-slate-600 border-transparent'
-                        " @click="showReview()">
-                        {{ $t("Reviews") }}
+                        ?
+                        'text-primary border-primary' :
+                        'text-slate-600 border-transparent'" @click="showReview()">
+                        {{ $t('Reviews') }}
                     </button> -->
                 </div>
 
@@ -418,39 +420,39 @@
                 <!-- Reviews -->
                 <!--<div v-if="review" class="">
                     <div class="text-slate-950 text-lg lg:text-2xl font-medium leading-loose mb-4">
-                        {{ $t("Rating and Review") }}
+                        {{ $t('Rating and Review') }}
                     </div> -->
 
-                    <!-- Review Rating percentage -->
-                    <!-- <div class="max-w-2xl">
+                <!-- Review Rating percentage -->
+                <!-- <div class="max-w-2xl">
                         <ReviewRatings :reviewRatings="averageRatings.percentages"
                             :averageRating="averageRatings?.rating" :totalReview="averageRatings.total_review" />
                     </div> -->
 
-                    <!-- Reviews -->
-                    <!-- <div class="border-t border-slate-200 mt-6">
+                <!-- Reviews -->
+                <!-- <div class="border-t border-slate-200 mt-6">
                         <div class="mt-4 lg:mt-6 text-slate-950 text-lg lg:text-2xl font-medium leading-loose">
-                            {{ $t("Reviews") }}
+                            {{ $t('Reviews') }}
                         </div>
 
                         <div class="space-y-6 mt-6">
                             <Review v-for="review in reviews" :key="review.id" :review="review" />
                         </div> -->
 
-                        <!-- pagination's -->
-                        <!-- <div class="flex justify-between items-center w-full mt-8 gap-4 flex-wrap">
+                <!-- pagination's -->
+                <!-- <div class="flex justify-between items-center w-full mt-8 gap-4 flex-wrap">
                             <div class="text-slate-800 text-base font-normal leading-normal">
-                                {{ $t("Showing") }} {{ perPage * (currentPage - 1) + 1 }}
-                                {{ $t("to") }}
-                                {{ perPage * (currentPage - 1) + reviews.length }}
-                                {{ $t("of") }} {{ totalReviews }} {{ $t("results") }}
+                                {{ $t('Showing') }} {{ perPage * (currentPage - 1) + 1 }}
+                                {{ $t('to') }}
+                                {{ perPage * (currentPage - 1) + reviews . length }}
+                                {{ $t('of') }} {{ totalReviews }} {{ $t('results') }}
                             </div>
                             <div>
                                 <vue-awesome-paginate :total-items="totalReviews" :items-per-page="perPage"
                                     type="button" :max-pages-shown="3" v-model="currentPage"
                                     :hide-prev-next-when-ends="true" @click="onClickHandler" />
                             </div>
-                        </div> 
+                        </div>
                     </div>
                 </div>-->
             </div>
@@ -465,7 +467,7 @@
         <!-- Similar Products -->
         <div v-if="relatedProducts.length > 0 && !isLoading">
             <div class="mt-4 xl:mt-6 text-slate-800 text-lg md:text-2xl lg:text-3xl font-bold leading-9">
-                {{ $t("Similar Products") }}
+                {{ $t('Similar Products') }}
             </div>
 
             <div
@@ -539,511 +541,558 @@
 
 
 <script setup>
-import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import ProductDetailsRightSide from "../components/ProductDetailsRightSide.vue";
-import ToastSuccessMessage from "../components/ToastSuccessMessage.vue";
-import BagIcon from "../icons/Bag.vue";
-import { useMaster } from "../stores/MasterStore";
+    import {
+        nextTick,
+        onMounted,
+        onUnmounted,
+        ref,
+        watch
+    } from "vue";
+    import {
+        useRoute,
+        useRouter
+    } from "vue-router";
+    import ProductDetailsRightSide from "../components/ProductDetailsRightSide.vue";
+    import ToastSuccessMessage from "../components/ToastSuccessMessage.vue";
+    import BagIcon from "../icons/Bag.vue";
+    import {
+        useMaster
+    } from "../stores/MasterStore";
 
-import { HeartIcon, HomeIcon, MinusIcon, PlusIcon, ShareIcon } from "@heroicons/vue/24/outline";
-import { HeartIcon as HeartIconFill, StarIcon } from "@heroicons/vue/24/solid";
-import { FreeMode, Navigation, Thumbs } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/vue";
+    import {
+        HeartIcon,
+        HomeIcon,
+        MinusIcon,
+        PlusIcon,
+        ShareIcon
+    } from "@heroicons/vue/24/outline";
+    import {
+        HeartIcon as HeartIconFill,
+        StarIcon
+    } from "@heroicons/vue/24/solid";
+    import {
+        FreeMode,
+        Navigation,
+        Thumbs
+    } from "swiper/modules";
+    import {
+        Swiper,
+        SwiperSlide
+    } from "swiper/vue";
 
-import ProductCard from "../components/ProductCard.vue";
-import Review from "../components/Review.vue";
-import ReviewRatings from "../components/ReviewRatings.vue";
-import { useAuth } from "../stores/AuthStore";
-import { useBasketStore } from "../stores/BasketStore";
-import SkeletonLoader from "../components/SkeletonLoader.vue";
+    import ProductCard from "../components/ProductCard.vue";
+    import Review from "../components/Review.vue";
+    import ReviewRatings from "../components/ReviewRatings.vue";
+    import {
+        useAuth
+    } from "../stores/AuthStore";
+    import {
+        useBasketStore
+    } from "../stores/BasketStore";
+    import SkeletonLoader from "../components/SkeletonLoader.vue";
 
-import $ from 'jquery';
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/navigation";
-import "swiper/css/thumbs";
+    import $ from 'jquery';
+    // Import Swiper styles
+    import "swiper/css";
+    import "swiper/css/free-mode";
+    import "swiper/css/navigation";
+    import "swiper/css/thumbs";
 
-import { useToast } from "vue-toastification";
-
-
-
-
-
-const toast = useToast();
-
-const thumbsSwiper = ref(null);
-
-const modules = [FreeMode, Navigation, Thumbs];
-
-const setThumbsSwiper = (swiper) => {
-    thumbsSwiper.value = swiper;
-};
-
-const route = useRoute();
-const router = useRouter();
-const masterStore = useMaster();
-const basketStore = useBasketStore();
-const authStore = useAuth();
-
-const formData = ref({
-    product_id: route.params.id,
-    size: null,
-    color: null,
-    unit: null,
-});
-
-const product = ref({});
-const productPrice = ref(0);
-const mainPrice = ref(0);
-const discountPercentage = ref(0);
-
-const relatedProducts = ref([]);
-const popularProducts = ref([]);
-
-const aboutProduct = ref(true);
-const review = ref(false);
-
-const cartProduct = ref(null);
-const isLoading = ref(true);
-const copied = ref(false);
-
-onMounted(() => {
-    fetchProductDetails();
-    window.scrollTo(0, 0);
-    findProductInCart(route.params.id, formData.value.color);
-});
-
-watch(formData, () => {
-    calculateProductPrice();
-}, { deep: true });
+    import {
+        useToast
+    } from "vue-toastification";
 
 
-const copyUrl = async () => {
-  try {
-    await navigator.clipboard.writeText(window.location.href);
-    const content = {
-        component: ToastSuccessMessage,
-        props: {
-            title: 'Product Copied',
-            message: 'Product Url is copied in clipboard successfully',
-        },
+
+
+
+    const toast = useToast();
+
+    const thumbsSwiper = ref(null);
+
+    const modules = [FreeMode, Navigation, Thumbs];
+
+    const setThumbsSwiper = (swiper) => {
+        thumbsSwiper.value = swiper;
     };
-    toast(content, {
-      type: "default",
-      hideProgressBar: true,
-      icon: false,
-      position: "top-right",
-      toastClassName: "vue-toastification-alert",
-      timeout: 3000
+
+    const route = useRoute();
+    const router = useRouter();
+    const masterStore = useMaster();
+    const basketStore = useBasketStore();
+    const authStore = useAuth();
+
+    const formData = ref({
+        product_id: route.params.id,
+        size: null,
+        color: null,
+        unit: null,
     });
 
-  } catch (e) {
-    console.error("Failed to copy URL", e);
-    toast("Failed to copy URL!", { type: "error" });
-  }
-};
+    const product = ref({});
+    const productPrice = ref(0);
+    const mainPrice = ref(0);
+    const discountPercentage = ref(0);
 
+    const relatedProducts = ref([]);
+    const popularProducts = ref([]);
 
-const calculateProductPrice = () => {
-    var colorPrice = 0;
-    var sizePrice = 0;
+    const aboutProduct = ref(true);
+    const review = ref(false);
 
-    const color = product.value.colors?.find((color) => color.id == formData.value.color);
-    const size = product.value.sizes?.find((size) => size.id == formData.value.size);
+    const cartProduct = ref(null);
+    const isLoading = ref(true);
+    const copied = ref(false);
 
-    if (color) {
-        colorPrice = color.price ?? 0;
-    }
-    if (size) {
-        sizePrice = size.price ?? 0;
-    }
+    onMounted(() => {
+        fetchProductDetails();
+        window.scrollTo(0, 0);
+        findProductInCart(route.params.id, formData.value.color);
+    });
 
-    if (product.value.discount_price > 0) {
-        productPrice.value = product.value.discount_price + colorPrice + sizePrice;
-        mainPrice.value = product.value.price + colorPrice + sizePrice;
-    } else {
-        productPrice.value = product.value.price + colorPrice + sizePrice;
-        mainPrice.value = productPrice.value;
-    }
-
-    discountPercentage.value = (((mainPrice.value - productPrice.value) / mainPrice.value) * 100).toFixed(2);
-}
-
-
-const buyNow = () => {
-    if (authStore.token === null) {
-        return (authStore.loginModal = true);
-    }
-    basketStore.addToCart({
-        product_id: formData.value.product_id,
-        is_buy_now: true,
-        quantity: 1,
-        size: formData.value.size,
-        color: formData.value.color,
-        unit: null
+    watch(formData, () => {
+        calculateProductPrice();
     }, {
-        ...product.value,
-        color: product.value.colors?.find(c => c.id === formData.value.color) || { id: formData.value.color }
+        deep: true
     });
 
-    basketStore.buyNowShopId = product.value?.shop.id;
-    router.push({ name: "buynow" });
-};
 
-watch(route, async () => {
-    await nextTick();
-    window.scrollTo(0, 0);
-    fetchProductDetails();
-    aboutProduct.value = true;
-    review.value = false;
-    formData.value.product_id = route.params.id;
-    findProductInCart(route.params.id, formData.value.color);
-});
+    const copyUrl = async () => {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            const content = {
+                component: ToastSuccessMessage,
+                props: {
+                    title: 'Product Copied',
+                    message: 'Product Url is copied in clipboard successfully',
+                },
+            };
+            toast(content, {
+                type: "default",
+                hideProgressBar: true,
+                icon: false,
+                position: "top-right",
+                toastClassName: "vue-toastification-alert",
+                timeout: 3000
+            });
 
-watch(() => basketStore.products, () => {
-    findProductInCart(route.params.id, formData.value.color);
-}, { deep: true });
+        } catch (e) {
+            console.error("Failed to copy URL", e);
+            toast("Failed to copy URL!", {
+                type: "error"
+            });
+        }
+    };
 
-const findProductInCart = (productId, colorId) => {
-    let foundProduct = null;
-    basketStore.products.forEach((item) => {
-        item.products.find((product) => {
-            if (product.id == productId && product.color?.id == colorId) {
-                foundProduct = product;
-                return true;
+
+    const calculateProductPrice = () => {
+        var colorPrice = 0;
+        var sizePrice = 0;
+
+        const color = product.value.colors?.find((color) => color.id == formData.value.color);
+        const size = product.value.sizes?.find((size) => size.id == formData.value.size);
+
+        if (color) {
+            colorPrice = color.price ?? 0;
+        }
+        if (size) {
+            sizePrice = size.price ?? 0;
+        }
+
+        if (product.value.discount_price > 0) {
+            productPrice.value = product.value.discount_price + colorPrice + sizePrice;
+            mainPrice.value = product.value.price + colorPrice + sizePrice;
+        } else {
+            productPrice.value = product.value.price + colorPrice + sizePrice;
+            mainPrice.value = productPrice.value;
+        }
+
+        discountPercentage.value = (((mainPrice.value - productPrice.value) / mainPrice.value) * 100).toFixed(2);
+    }
+
+
+    const buyNow = () => {
+        if (authStore.token === null) {
+            return (authStore.loginModal = true);
+        }
+        basketStore.addToCart({
+            product_id: formData.value.product_id,
+            is_buy_now: true,
+            quantity: 1,
+            size: formData.value.size,
+            color: formData.value.color,
+            unit: null
+        }, {
+            ...product.value,
+            color: product.value.colors?.find(c => c.id === formData.value.color) || {
+                id: formData.value.color
             }
         });
+
+        basketStore.buyNowShopId = product.value?.shop.id;
+        router.push({
+            name: "buynow"
+        });
+    };
+
+    watch(route, async () => {
+        await nextTick();
+        window.scrollTo(0, 0);
+        fetchProductDetails();
+        aboutProduct.value = true;
+        review.value = false;
+        formData.value.product_id = route.params.id;
+        findProductInCart(route.params.id, formData.value.color);
     });
-    cartProduct.value = foundProduct;
-    if (foundProduct) {
-        formData.value.size = foundProduct.size?.id;
-        formData.value.color = foundProduct.color?.id;
-        formData.value.unit = foundProduct.unit;
-    }
-};
 
-const addToCart = () => {
-    basketStore.addToCart(formData.value, {
-        ...product.value,
-        color: product.value.colors?.find(c => c.id === formData.value.color) || { id: formData.value.color }
-    });
-    setTimeout(() => {
+    watch(() => basketStore.products, () => {
         findProductInCart(route.params.id, formData.value.color);
-    }, 200);
-};
-
-const decrementQty = () => {
-    basketStore.decrementQuantity(product.value);
-    setTimeout(() => {
-        findProductInCart(route.params.id, formData.value.color);
-    }, 200);
-};
-
-const incrementQty = () => {
-    basketStore.incrementQuantity(product.value);
-    setTimeout(() => {
-        findProductInCart(route.params.id, formData.value.color);
-    }, 200);
-};
-
-const favoriteAddOrRemove = () => {
-    if (authStore.token === null) {
-        return (authStore.loginModal = true);
-    }
-    axios.post('/favorite-add-or-remove', {
-        product_id: product.value.id
     }, {
-        headers: {
-            Authorization: authStore.token
-        }
-    }).then(() => {
-        product.value.is_favorite = !product.value.is_favorite
-        if (product.value.is_favorite === false) {
-            const content = {
-                component: ToastSuccessMessage,
-                props: {
-                    title: 'Product removed from favorite',
-                    message: 'Product removed from favorite successfully',
-                },
-            };
-            toast(content, {
-                type: "default",
-                hideProgressBar: true,
-                icon: false,
-                position: "top-right",
-                toastClassName: "vue-toastification-alert",
-                timeout: 3000
+        deep: true
+    });
+
+    const findProductInCart = (productId, colorId) => {
+        let foundProduct = null;
+        basketStore.products.forEach((item) => {
+            item.products.find((product) => {
+                if (product.id == productId && product.color?.id == colorId) {
+                    foundProduct = product;
+                    return true;
+                }
             });
-        } else {
-            const content = {
-                component: ToastSuccessMessage,
-                props: {
-                    title: 'Product added to favorite',
-                    message: 'Product added to favorite successfully',
-                },
-            };
-            toast(content, {
-                type: "default",
-                hideProgressBar: true,
-                icon: false,
-                position: "top-right",
-                toastClassName: "vue-toastification-alert",
-                timeout: 3000
-            });
+        });
+        cartProduct.value = foundProduct;
+        if (foundProduct) {
+            formData.value.size = foundProduct.size?.id;
+            formData.value.color = foundProduct.color?.id;
+            formData.value.unit = foundProduct.unit;
         }
-        authStore.fetchFavoriteProducts();
-    }).catch((error) => {
-        console.log(error);
-    });
-};
+    };
 
-const showReview = () => {
-    aboutProduct.value = false;
-    review.value = true;
-    fetchReviews();
-};
-
-
-const flashSale = ref({});
-const fetchProductDetails = async () => {
-    isLoading.value = true;
-    axios.get("/product-details", {
-        params: { product_id: route.params.id },
-        headers: {
-            Authorization: authStore.token,
-        },
-    }).then((response) => {
-        product.value = response.data.data.product;
-        relatedProducts.value = response.data.data.related_products;
-        popularProducts.value = response.data.data.popular_products;
-        flashSale.value = response.data.data.product.flash_sale;
-
-
-        if (response) {
-            startCountdown();
-        }
-
-        if (product.value.colors.length > 0) {
-            formData.value.color = product.value.colors[0].id;
-        } else {
-            formData.value.color = null;
-        }
-        if (product.value.sizes.length > 0) {
-            formData.value.size = product.value.sizes[0].id;
-        } else {
-            formData.value.size = null;
-        }
-        calculateProductPrice();
-        findProductInCart(route.params.id);
-
-        setTimeout(() => {
-            isLoading.value = false;
-        }, 100);
-    });
-};
-
-const averageRatings = ref({});
-
-const totalReviews = ref(0);
-const reviews = ref([]);
-
-const currentPage = ref(1);
-const perPage = ref(6);
-
-const onClickHandler = (page) => {
-    currentPage.value = page;
-    fetchReviews();
-};
-
-const fetchReviews = async () => {
-    axios.get("/reviews", {
-        params: {
-            product_id: route.params.id,
-            page: currentPage.value,
-            per_page: perPage.value,
-        },
-    }).then((response) => {
-        totalReviews.value = response.data.data.total;
-        reviews.value = response.data.data.reviews;
-        averageRatings.value = response.data.data.average_rating_percentage;
-    });
-};
-
-
-const endDay = ref("");
-const endHour = ref("");
-const endMinute = ref("");
-const endSecond = ref("");
-let countdownInterval = null;
-
-const startCountdown = () => {
-    const endDate = new Date(flashSale.value?.end_date).getTime();
-
-    if (flashSale.value?.end_date) {
-        countdownInterval = setInterval(() => {
-            const now = new Date().getTime();
-            const timeLeft = endDate - now;
-
-            if (timeLeft <= 0) {
-                clearInterval(countdownInterval);
-                endDay.value = "00";
-                endHour.value = "00";
-                endMinute.value = "00";
-                endSecond.value = "00";
-            } else {
-                endDay.value = String(Math.floor(timeLeft / (1000 * 60 * 60 * 24))).padStart(2, "0");
-                endHour.value = String(Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, "0");
-                endMinute.value = String(Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, "0");
-                endSecond.value = String(Math.floor((timeLeft % (1000 * 60)) / 1000)).padStart(2, "0");
+    const addToCart = () => {
+        basketStore.addToCart(formData.value, {
+            ...product.value,
+            color: product.value.colors?.find(c => c.id === formData.value.color) || {
+                id: formData.value.color
             }
-        }, 1000);
-    }
-};
+        });
+        setTimeout(() => {
+            findProductInCart(route.params.id, formData.value.color);
+        }, 200);
+    };
 
-onUnmounted(() => {
-    clearInterval(countdownInterval);
-});
+    const decrementQty = () => {
+        basketStore.decrementQuantity(product.value);
+        setTimeout(() => {
+            findProductInCart(route.params.id, formData.value.color);
+        }, 200);
+    };
 
-// Position variables to control zoom position
-const mouseX = ref(0);
-const mouseY = ref(0);
+    const incrementQty = () => {
+        basketStore.incrementQuantity(product.value);
+        setTimeout(() => {
+            findProductInCart(route.params.id, formData.value.color);
+        }, 200);
+    };
 
-const handleMouseMove = (event) => {
-    const container = event.currentTarget;
-    const rect = container.getBoundingClientRect();
+    const favoriteAddOrRemove = () => {
+        if (authStore.token === null) {
+            return (authStore.loginModal = true);
+        }
+        axios.post('/favorite-add-or-remove', {
+            product_id: product.value.id
+        }, {
+            headers: {
+                Authorization: authStore.token
+            }
+        }).then(() => {
+            product.value.is_favorite = !product.value.is_favorite
+            if (product.value.is_favorite === false) {
+                const content = {
+                    component: ToastSuccessMessage,
+                    props: {
+                        title: 'Product removed from favorite',
+                        message: 'Product removed from favorite successfully',
+                    },
+                };
+                toast(content, {
+                    type: "default",
+                    hideProgressBar: true,
+                    icon: false,
+                    position: "top-right",
+                    toastClassName: "vue-toastification-alert",
+                    timeout: 3000
+                });
+            } else {
+                const content = {
+                    component: ToastSuccessMessage,
+                    props: {
+                        title: 'Product added to favorite',
+                        message: 'Product added to favorite successfully',
+                    },
+                };
+                toast(content, {
+                    type: "default",
+                    hideProgressBar: true,
+                    icon: false,
+                    position: "top-right",
+                    toastClassName: "vue-toastification-alert",
+                    timeout: 3000
+                });
+            }
+            authStore.fetchFavoriteProducts();
+        }).catch((error) => {
+            console.log(error);
+        });
+    };
 
-    let clientX, clientY;
-    if (event.type === "touchmove" || event.type === "touchstart") {
-        const touch = event.touches[0];
-        clientX = touch.clientX;
-        clientY = touch.clientY;
-    } else {
-        clientX = event.clientX;
-        clientY = event.clientY;
-    }
-
-    // Calculate mouse position as a percentage of the container dimensions
-    mouseX.value = ((clientX - rect.left) / rect.width) * 100;
-    mouseY.value = ((clientY - rect.top) / rect.height) * 100;
-};
-
-const resetZoom = () => {
-    mouseX.value = 50;
-    mouseY.value = 50;
-};
-
-watch([mouseX, mouseY], ([x, y]) => {
-    document.documentElement.style.setProperty('--mouse-x', `${x}%`);
-    document.documentElement.style.setProperty('--mouse-y', `${y}%`);
-});
-
-let showcolordiv = 0;
+    const showReview = () => {
+        aboutProduct.value = false;
+        review.value = true;
+        fetchReviews();
+    };
 
 
-$(document).ready(function () {
-    // Handle go back
-    $(document).on('click', '.changeshowcolordiv', function () {
-        $('#customdiv').hide();
-        $('#swipperdiv').show();
+    const flashSale = ref({});
+    const fetchProductDetails = async () => {
+        isLoading.value = true;
+        axios.get("/product-details", {
+            params: {
+                product_id: route.params.id
+            },
+            headers: {
+                Authorization: authStore.token,
+            },
+        }).then((response) => {
+            product.value = response.data.data.product;
+            relatedProducts.value = response.data.data.related_products;
+            popularProducts.value = response.data.data.popular_products;
+            flashSale.value = response.data.data.product.flash_sale;
+
+
+            if (response) {
+                startCountdown();
+            }
+
+            if (product.value.colors.length > 0) {
+                formData.value.color = product.value.colors[0].id;
+            } else {
+                formData.value.color = null;
+            }
+            if (product.value.sizes.length > 0) {
+                formData.value.size = product.value.sizes[0].id;
+            } else {
+                formData.value.size = null;
+            }
+            calculateProductPrice();
+            findProductInCart(route.params.id);
+
+            setTimeout(() => {
+                isLoading.value = false;
+            }, 100);
+        });
+    };
+
+    const averageRatings = ref({});
+
+    const totalReviews = ref(0);
+    const reviews = ref([]);
+
+    const currentPage = ref(1);
+    const perPage = ref(6);
+
+    const onClickHandler = (page) => {
+        currentPage.value = page;
+        fetchReviews();
+    };
+
+    const fetchReviews = async () => {
+        axios.get("/reviews", {
+            params: {
+                product_id: route.params.id,
+                page: currentPage.value,
+                per_page: perPage.value,
+            },
+        }).then((response) => {
+            totalReviews.value = response.data.data.total;
+            reviews.value = response.data.data.reviews;
+            averageRatings.value = response.data.data.average_rating_percentage;
+        });
+    };
+
+
+    const endDay = ref("");
+    const endHour = ref("");
+    const endMinute = ref("");
+    const endSecond = ref("");
+    let countdownInterval = null;
+
+    const startCountdown = () => {
+        const endDate = new Date(flashSale.value?.end_date).getTime();
+
+        if (flashSale.value?.end_date) {
+            countdownInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const timeLeft = endDate - now;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    endDay.value = "00";
+                    endHour.value = "00";
+                    endMinute.value = "00";
+                    endSecond.value = "00";
+                } else {
+                    endDay.value = String(Math.floor(timeLeft / (1000 * 60 * 60 * 24))).padStart(2, "0");
+                    endHour.value = String(Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 *
+                        60))).padStart(2, "0");
+                    endMinute.value = String(Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60)))
+                        .padStart(2, "0");
+                    endSecond.value = String(Math.floor((timeLeft % (1000 * 60)) / 1000)).padStart(2, "0");
+                }
+            }, 1000);
+        }
+    };
+
+    onUnmounted(() => {
+        clearInterval(countdownInterval);
     });
-});
 
-const selectedImage = ref('');
-$('#customdiv').hide();
+    // Position variables to control zoom position
+    const mouseX = ref(0);
+    const mouseY = ref(0);
 
-function updateImage(image) {
-    selectedImage.value = image;
-    $('#customdiv').show();
-    $('#swipperdiv').hide();
-}
+    const handleMouseMove = (event) => {
+        const container = event.currentTarget;
+        const rect = container.getBoundingClientRect();
+
+        let clientX, clientY;
+        if (event.type === "touchmove" || event.type === "touchstart") {
+            const touch = event.touches[0];
+            clientX = touch.clientX;
+            clientY = touch.clientY;
+        } else {
+            clientX = event.clientX;
+            clientY = event.clientY;
+        }
+
+        // Calculate mouse position as a percentage of the container dimensions
+        mouseX.value = ((clientX - rect.left) / rect.width) * 100;
+        mouseY.value = ((clientY - rect.top) / rect.height) * 100;
+    };
+
+    const resetZoom = () => {
+        mouseX.value = 50;
+        mouseY.value = 50;
+    };
+
+    watch([mouseX, mouseY], ([x, y]) => {
+        document.documentElement.style.setProperty('--mouse-x', `${x}%`);
+        document.documentElement.style.setProperty('--mouse-y', `${y}%`);
+    });
+
+    let showcolordiv = 0;
 
 
+    $(document).ready(function() {
+        // Handle go back
+        $(document).on('click', '.changeshowcolordiv', function() {
+            $('#customdiv').hide();
+            $('#swipperdiv').show();
+        });
+    });
+
+    const selectedImage = ref('');
+    $('#customdiv').hide();
+
+    function updateImage(image) {
+        selectedImage.value = image;
+        $('#customdiv').show();
+        $('#swipperdiv').hide();
+    }
 </script>
 
 
 
 <style scoped>
-.zoom-container {
-    overflow: hidden;
-    position: relative;
-    cursor: zoom-in;
-    width: 100%;
-    height: 100%;
-}
+    .zoom-container {
+        overflow: hidden;
+        position: relative;
+        cursor: zoom-in;
+        width: 100%;
+        height: 100%;
+    }
 
-.zoom-image {
-    transition: transform 0.3s ease, transform-origin 0.3s ease;
-    transform: scale(1);
-    transform-origin: center center;
-}
+    .zoom-image {
+        transition: transform 0.3s ease, transform-origin 0.3s ease;
+        transform: scale(1);
+        transform-origin: center center;
+    }
 
-.zoom-container:hover .zoom-image {
-    transform: scale(3.5);
-    transform-origin: calc(var(--mouse-x, 50%)) calc(var(--mouse-y, 50%));
-}
+    .zoom-container:hover .zoom-image {
+        transform: scale(3.5);
+        transform-origin: calc(var(--mouse-x, 50%)) calc(var(--mouse-y, 50%));
+    }
 </style>
 
 <style>
-.description img {
-    max-width: 95% !important;
-}
-
-iframe {
-    width: 100%;
-    height: 300px !important;
-}
-
-@media(max-width:500px) {
-    iframe {
-        height: 200px !important;
+    .description img {
+        max-width: 95% !important;
     }
-}
 
-@media(max-width:375px) {
     iframe {
-        height: 180px !important;
+        width: 100%;
+        height: 300px !important;
     }
-}
 
-@media(max-width:320px) {
-    iframe {
-        height: 160px !important;
+    @media(max-width:500px) {
+        iframe {
+            height: 200px !important;
+        }
     }
-}
 
-.product-details-slider .swiper-slide {
-    height: auto !important;
-}
+    @media(max-width:375px) {
+        iframe {
+            height: 180px !important;
+        }
+    }
 
-.product-details-thumbnail .swiper-slide {
-    @apply h-20 md:h-[120px] lg:h-[100px];
-}
+    @media(max-width:320px) {
+        iframe {
+            height: 160px !important;
+        }
+    }
 
-.product-details-thumbnail .swiper-button-prev,
-.product-details-thumbnail .swiper-button-next {
-    @apply bg-white w-6 h-6 rounded-full shadow border border-slate-200 text-slate-600 -translate-y-1/2 mt-0;
-}
+    .product-details-slider .swiper-slide {
+        height: auto !important;
+    }
 
-.product-details-thumbnail .swiper-button-prev::after,
-.product-details-thumbnail .swiper-button-next::after {
-    @apply text-base;
-}
+    .product-details-thumbnail .swiper-slide {
+        @apply h-20 md:h-[120px] lg:h-[100px];
+    }
 
-.product-details-thumbnail .swiper-button-next {
-    right: 0px;
-}
+    .product-details-thumbnail .swiper-button-prev,
+    .product-details-thumbnail .swiper-button-next {
+        @apply bg-white w-6 h-6 rounded-full shadow border border-slate-200 text-slate-600 -translate-y-1/2 mt-0;
+    }
 
-.product-details-thumbnail .swiper-button-prev {
-    left: 0px;
-}
+    .product-details-thumbnail .swiper-button-prev::after,
+    .product-details-thumbnail .swiper-button-next::after {
+        @apply text-base;
+    }
 
-.product-details-thumbnail .swiper-slide {
-    @apply border border-slate-100 rounded-lg transition overflow-hidden;
-}
+    .product-details-thumbnail .swiper-button-next {
+        right: 0px;
+    }
 
-.product-details-thumbnail .swiper-slide-thumb-active {
-    @apply border border-primary;
-}
+    .product-details-thumbnail .swiper-button-prev {
+        left: 0px;
+    }
+
+    .product-details-thumbnail .swiper-slide {
+        @apply border border-slate-100 rounded-lg transition overflow-hidden;
+    }
+
+    .product-details-thumbnail .swiper-slide-thumb-active {
+        @apply border border-primary;
+    }
 </style>
