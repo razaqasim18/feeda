@@ -501,25 +501,18 @@ const fetchProducts = async () => {
     }
 };
 
-// Improved scroll handler with debouncing
+// Handle scroll event
 const handleScroll = () => {
-    if (isLoadingMore.value || hasReachedEnd.value || isScrolling.value) return;
+    if (isLoadingMore.value || hasReachedEnd.value) return;
     
     const scrollPosition = window.innerHeight + window.scrollY;
     const documentHeight = document.documentElement.offsetHeight;
-    const threshold = 500; // Increased threshold for better UX
+    const threshold = 200; // pixels from bottom to trigger load
     
     if (scrollPosition > documentHeight - threshold) {
-        isScrolling.value = true;
         loadMoreProducts();
-        
-        // Simple debounce
-        setTimeout(() => {
-            isScrolling.value = false;
-        }, 500);
     }
 };
-
 const loadMoreProducts = () => {
     currentPage.value += 1;
     fetchProducts();
