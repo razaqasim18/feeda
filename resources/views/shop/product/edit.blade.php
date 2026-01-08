@@ -4,14 +4,14 @@
 
 @section('content')
     <div class="page-title">
-        <div class="d-flex gap-2 align-items-center">
+        <div class="gap-2 d-flex align-items-center">
             {{ __('Edit Product') }}
         </div>
     </div>
     <form action="{{ route('shop.product.update', $product->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
-        <div class="card mt-3">
+        <div class="mt-3 card">
             <div class="card-body">
 
                 <div class="">
@@ -26,7 +26,7 @@
                     </label>
                     <textarea name="short_description" class="form-control" rows="2" placeholder="Short Description">{{ old('short_description') ?? $product->short_description }}</textarea>
                     @error('short_description')
-                        <p class="text text-danger m-0">{{ $message }}</p>
+                        <p class="m-0 text text-danger">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -41,24 +41,24 @@
                     <input type="hidden" id="description" name="description"
                         value="{{ old('description') ?? $product->description }}">
                     @error('description')
-                        <p class="text text-danger m-0">{{ $message }}</p>
+                        <p class="m-0 text text-danger">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
         </div>
 
         <!--######## General Information ##########-->
-        <div class="card mt-4">
+        <div class="mt-4 card">
             <div class="card-body">
 
-                <div class="d-flex gap-2 border-bottom pb-2">
+                <div class="gap-2 pb-2 d-flex border-bottom">
                     <i class="fa-solid fa-user"></i>
                     <h5>
                         {{ __('Generale Information') }}
                     </h5>
                 </div>
 
-                <div class="row mt-3">
+                <div class="mt-3 row">
 
                     <div class="col-md-6 col-lg-4">
                         <label class="form-label">
@@ -77,11 +77,11 @@
                             @endforeach
                         </select>
                         @error('category')
-                            <p class="text text-danger m-0">{{ $message }}</p>
+                            <p class="m-0 text text-danger">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <div class="col-md-6 col-lg-4 mt-3 mt-md-0">
+                    <div class="mt-3 col-md-6 col-lg-4 mt-md-0">
                         <label class="form-label">
                             {{ __('Select Sub Categories') }}
                         </label>
@@ -95,11 +95,11 @@
                             @endforeach
                         </select>
                         @error('sub_category')
-                            <p class="text text-danger m-0">{{ $message }}</p>
+                            <p class="m-0 text text-danger">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <div class="col-md-6 col-lg-4 mt-3 mt-md-0">
+                    <div class="mt-3 col-md-6 col-lg-4 mt-md-0">
                         <x-select label="Select Brand" name="brand">
                             <option value="">
                                 {{ __('Select Brand') }}
@@ -113,7 +113,7 @@
                         </x-select>
                     </div>
 
-                    <div class="col-md-6 col-lg-4 mt-4">
+                    <div class="mt-4 col-md-6 col-lg-4">
                         <label class="form-label">{{ __('Select Color') }}</label>
                         <select name="colorIds[]" data-placeholder="Select Color" class="form-control colorSelect" multiple
                             style="width: 100%">
@@ -130,7 +130,7 @@
                         </select>
                     </div>
 
-                    <div class="col-lg-4 col-md-6 mt-4">
+                    <div class="mt-4 col-lg-4 col-md-6">
                         <x-select label="Select Unit" name="unit" placeholder="Select Unit">
                             <option value="">
                                 {{ __('Select Unit') }}
@@ -144,7 +144,7 @@
                         </x-select>
                     </div>
 
-                    <div class="col-md-6 col-lg-4 mt-4">
+                    <div class="mt-4 col-md-6 col-lg-4">
                         <label class="form-label">{{ __('Select Size') }}</label>
                         <select name="sizeIds[]" data-placeholder="Select Size" class="form-control sizeSelector" multiple
                             style="width: 100%">
@@ -160,9 +160,9 @@
                         </select>
                     </div>
 
-                    <div class="col-md-6 col-lg-4 mt-4">
-                        <label class="form-label d-flex align-items-center gap-2 justify-content-between">
-                            <div class="d-flex align-items-center gap-2">
+                    <div class="mt-4 col-md-6 col-lg-4">
+                        <label class="gap-2 form-label d-flex align-items-center justify-content-between">
+                            <div class="gap-2 d-flex align-items-center">
                                 <span>
                                     {{ __('Product SKU') }}
                                     <span class="text-danger">*</span>
@@ -172,7 +172,7 @@
                                     <i class="bi bi-info"></i>
                                 </span>
                             </div>
-                            <span class="text-primary cursor-pointer" onclick="generateCode()">
+                            <span class="cursor-pointer text-primary" onclick="generateCode()">
                                 {{ __('Generate Code') }}
                             </span>
                         </label>
@@ -180,7 +180,7 @@
                             value="{{ $product->code }}"
                             oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" />
                         @error('code')
-                            <p class="text text-danger m-0">{{ $message }}</p>
+                            <p class="m-0 text text-danger">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
@@ -188,16 +188,16 @@
         </div>
 
         <!--######## Price Information ##########-->
-        <div class="card mt-4 mb-4">
+        <div class="mt-4 mb-4 card">
             <div class="card-body">
 
-                <div class="d-flex gap-2 border-bottom pb-2">
+                <div class="gap-2 pb-2 d-flex border-bottom">
                     <i class="fa-solid fa-user"></i>
                     <h5>
                         {{ __('Price Information') }}
                     </h5>
                 </div>
-                <div class="row mt-3">
+                <div class="mt-3 row">
                     <div class="col-lg-3 col-md-6">
                         <x-input type="text" name="buy_price" label="Buying Price" placeholder="Buying Price"
                             required="true" onlyNumber="true" :value="$product->buy_price" />
@@ -208,23 +208,17 @@
                             required="true" onlyNumber="true" :value="$product->price" />
                     </div>
 
-                    <div class="col-lg-3 col-md-6 mt-3 mt-md-0">
+                    <div class="mt-3 col-lg-3 col-md-6 mt-md-0">
                         <x-input type="text" name="discount_price" label="Discount Price"
                             placeholder="Discount Price" onlyNumber="true" :value="$product->discount_price" />
                     </div>
 
-                    <div class="col-lg-3 col-md-6 mt-3 mt-lg-0">
-                        @php
-                            $colorqty = 0;
-                            foreach ($product->colors as $color) {
-                                $colorqty += $color->pivot->quantity;
-                            }
-                        @endphp
+                    <div class="mt-3 col-lg-3 col-md-6 mt-lg-0">
                         <x-input type="text" name="quantity" label="Current Stock Quantity"
-                            placeholder="Current Stock Quantity" onlyNumber="true" :value="$product->quantity - $colorqty" />
+                            placeholder="Current Stock Quantity" onlyNumber="true" :value="$product->quantity" />
                     </div>
 
-                    <div class="col-md-6 mt-3">
+                    <div class="mt-3 col-md-6">
                         <x-select name="taxes[]" label="Vat & Tax" placeholder="Select Vat & Tax" multiselect="true">
                             @foreach ($taxes as $tax)
                                 <option value="{{ $tax->id }}"
@@ -235,14 +229,14 @@
                         </x-select>
                     </div>
 
-                    <div class="col-lg-3 col-md-6 mt-3">
+                    <div class="mt-3 col-lg-3 col-md-6">
                         <x-input type="text" onlyNumber="true" name="min_order_quantity"
                             label="Minimum Order Quantity" placeholder="Minimum Order Quantity" :value="$product->min_order_quantity" />
                     </div>
                 </div>
 
                 <!--######## color wise price table ##########-->
-                <div class="border rounded p-0 position-relative overflow-hidden" id="colorBox"
+                <div class="p-0 overflow-hidden border rounded position-relative" id="colorBox"
                     @if ($product->colors->isEmpty()) style="display: none" @endif>
                     <p class="fw-bolder box-title">
                         {{ __('Color wise extra price') }}
@@ -268,7 +262,7 @@
                             @foreach ($product->colors as $color)
                                 <tr id="selectedColorRow_{{ $color->id }}" style="display: table-row !important">
                                     <td>
-                                        <h4 class="mb-0 boxName d-flex align-items-center gap-1">
+                                        <h4 class="gap-1 mb-0 boxName d-flex align-items-center">
                                             <span
                                                 style="background-color:{{ $color->color_code }};width:20px;height:19px;display:inline-block; border-radius:5px;"></span>
                                             {{ $color->name }}
@@ -279,11 +273,11 @@
                                             value="{{ $color->id }}">
                                     </td>
                                     <td>
-                                        <div class="d-flex align-items-center gap-2">
+                                        <div class="gap-2 d-flex align-items-center">
                                             <span class="fw-bolder mainProductPrice">
                                                 {{ $productPrice }}
                                             </span>
-                                            <span class="bg-light px-2 py-1 rounded">
+                                            <span class="px-2 py-1 rounded bg-light">
                                                 <i class="fa-solid fa-plus"></i>
                                             </span>
                                             <input type="text" class="form-control extraPriceForm"
@@ -304,7 +298,7 @@
                                                 oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" />
 
                                             <input type="text" name="color[{{ $color->id }}][quantity]"
-                                                class="form-control" value="{{ $color->pivot->quantity }}"
+                                                class="form-control quantity" value="{{ $color->pivot->quantity }}"
                                                 oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" />
 
 
@@ -323,7 +317,7 @@
                 </div>
 
                 <!--######## Size wise price table ##########-->
-                <div class="border rounded p-0 position-relative overflow-hidden" id="sizeBox"
+                <div class="p-0 overflow-hidden border rounded position-relative" id="sizeBox"
                     @if ($product->sizes->isEmpty()) style="display: none" @endif>
                     <p class="fw-bold box-title">
                         {{ __('Size wise extra price') }}
@@ -344,6 +338,7 @@
                         </thead>
                         <tbody id="selectedSizesTableBody">
                             @foreach ($product->sizes as $size)
+                            
                                 <tr id="selectedSizeRow_{{ $size->id }}">
                                     <td>
                                         <h4 class="mb-0 boxName">{{ $size->name }}</h4>
@@ -353,17 +348,27 @@
                                             value="{{ $size->id }}">
                                     </td>
                                     <td>
-                                        <div class="d-flex align-items-center gap-2">
+                                        <div class="gap-2 d-flex align-items-center">
                                             <span class="fw-bolder mainProductPrice">
                                                 {{ $productPrice }}
                                             </span>
-                                            <span class="bg-light px-2 py-1 rounded">
+                                            <span class="px-2 py-1 rounded bg-light">
                                                 <i class="fa-solid fa-plus"></i>
                                             </span>
                                             <input type="text" class="form-control extraPriceForm"
                                                 name="size[{{ $size->id }}][price]"
                                                 value="{{ $size->pivot->price }}" style="width: 140px"
                                                 oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
+
+                                                 <input type="text" name="size[{{ $size->id }}][code]"
+                                                placeholder="Ex: 134543" class="form-control"
+                                                value="{{ $size->pivot->code }}"
+                                                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" />
+
+                                            <input type="text" name="size[{{ $size->id }}][quantity]"
+                                                class="form-control quantity" value="{{ $size->pivot->quantity }}"
+                                                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" />
+
                                         </div>
                                     </td>
                                     <td>
@@ -381,7 +386,7 @@
         </div>
 
         <!--######## Thumbnail Information ##########-->
-        <div class="row mb-3">
+        <div class="mb-3 row">
             <div class="col-md-5 col-xl-3">
                 <div class="card card-body h-100">
                     <div class="mb-2">
@@ -403,7 +408,7 @@
                 </div>
             </div>
 
-            <div class="col-md-7 col-xl-9 mt-3 mt-md-0">
+            <div class="mt-3 col-md-7 col-xl-9 mt-md-0">
                 <div class="card h-100">
                     <div class="card-body">
                         <div class="mb-2">
@@ -416,7 +421,7 @@
                             @enderror
                         </div>
 
-                        <div class="d-flex flex-wrap gap-3" id="additionalElements">
+                        <div class="flex-wrap gap-3 d-flex" id="additionalElements">
 
                             <!-- previous additional thumbnail -->
                             @foreach ($product->medias as $media)
@@ -471,17 +476,17 @@
         </div>
 
         <!--######## Product Video ##########-->
-        <div class="card mt-4">
+        <div class="mt-4 card">
             <div class="card-body">
 
-                <div class="d-flex gap-2 border-bottom pb-2">
+                <div class="gap-2 pb-2 d-flex border-bottom">
                     <i class="fa-solid fa-play"></i>
                     <h5>
                         {{ __('Upload or Add Product Video') }}
                     </h5>
                 </div>
 
-                <div class="mt-3 d-flex gap-2">
+                <div class="gap-2 mt-3 d-flex">
                     <!-- Select Upload Type -->
                     <div class="mb-3">
                         <label for="uploadType" class="form-label">
@@ -544,16 +549,16 @@
                     </div>
                 </div>
                 @error('uploadVideo.file')
-                    <p class="text text-danger m-0">{{ $message }}</p>
+                    <p class="m-0 text text-danger">{{ $message }}</p>
                 @enderror
             </div>
         </div>
 
         <!--######## SEO section ##########-->
-        <div class="card mt-4 mb-3">
+        <div class="mt-4 mb-3 card">
             <div class="card-body">
 
-                <div class="d-flex gap-2 border-bottom pb-2">
+                <div class="gap-2 pb-2 d-flex border-bottom">
                     <i class="fa-solid fa-square-poll-vertical"></i>
                     <h5>
                         {{ __('SEO Information') }}
@@ -573,7 +578,7 @@
                     </label>
                     <textarea name="meta_description" type="text" placeholder="{{ __('Meta Description') }}" class="form-control">{{ old('meta_description', $product->meta_description) }}</textarea>
                     @error('meta_description')
-                        <p class="text text-danger m-0">{{ $message }}</p>
+                        <p class="m-0 text text-danger">{{ $message }}</p>
                     @enderror
                 </div>
                 <div class="mt-3">
@@ -586,17 +591,17 @@
                     </select>
                     <small>@lang('Write keywords and Press enter to add new one')</small>
                     @error('meta_keywords')
-                        <p class="text text-danger m-0">{{ $message }}</p>
+                        <p class="m-0 text text-danger">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
         </div>
 
-        <div class="d-flex gap-3 justify-content-end align-items-center mb-3">
-            <button type="reset" class="btn btn-lg btn-outline-secondary rounded py-2">
+        <div class="gap-3 mb-3 d-flex justify-content-end align-items-center">
+            <button type="reset" class="py-2 rounded btn btn-lg btn-outline-secondary">
                 {{ __('Reset') }}
             </button>
-            <button type="submit" class="btn btn-lg btn-primary rounded py-2 px-5">
+            <button type="submit" class="px-5 py-2 rounded btn btn-lg btn-primary">
                 {{ __('Update') }}
             </button>
         </div>
@@ -722,12 +727,21 @@
                                     <input type="hidden" name="size[${sizeId}][id]" value="${sizeId}">
                                 </td>
                                 <td>
-                                    <div class="d-flex align-items-center gap-2">
+                                    <div class="gap-2 d-flex align-items-center">
                                         <span class="fw-bolder mainProductPrice">${mainPrice}</span>
-                                        <span class="bg-light px-2 py-1 rounded">
+                                        <span class="px-2 py-1 rounded bg-light">
                                             <i class="fa-solid fa-plus"></i>
                                         </span>
                                         <input type="text" class="form-control" name="size[${sizeId}][price]" value="0" style="width: 140px" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/^(\d*\.\d{0,2}|\d*)$/, '$1');" />
+                                         
+                                         <input type="text" name="size[${sizeId}][code]"
+                                            placeholder="SKU" class="form-control" value="${generateCoded()}"
+                                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/^(\d*\.\d{0,2}|\d*)$/, '$1');"
+                                        />
+                                        <input type="text" name="size[${sizeId}][quantity]"
+                                            class="form-control quantity" value="0"
+                                            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/^(\d*\.\d{0,2}|\d*)$/, '$1'); " 
+                                        />
                                     </div>
                                 </td>
                                 <td>
@@ -774,7 +788,7 @@
                         $('#selectedColorsTableBody').append(`
                             <tr id="selectedColorRow_${colorId}" style="display: table-row !important">
                                 <td>
-                                    <h4 class="mb-0 boxName d-flex align-items-center gap-1">
+                                    <h4 class="gap-1 mb-0 boxName d-flex align-items-center">
                                         <span style="background-color:${colorCode};width:20px;height:19px;display:inline-block; border-radius:5px;"></span>
                                         ${colorName}
                                     </h4>
@@ -782,9 +796,9 @@
                                     <input type="hidden" name="color[${colorId}][id]" value="${colorId}">
                                 </td>
                                 <td>
-                                    <div class="d-flex align-items-center gap-2">
+                                    <div class="gap-2 d-flex align-items-center">
                                         <span class="fw-bolder mainProductPrice">${mainPrice}</span>
-                                        <span class="bg-light px-2 py-1 rounded">
+                                        <span class="px-2 py-1 rounded bg-light">
                                             <i class="fa-solid fa-plus"></i>
                                         </span>
                                         <input type="text" class="form-control extraPriceForm" name="color[${colorId}][price]" value="0" style="width: 140px" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/^(\d*\.\d{0,2}|\d*)$/, '$1');">
@@ -795,7 +809,7 @@
                                             oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/^(\d*\.\d{0,2}|\d*)$/, '$1');"
                                         />
                                         <input type="text" name="color[${colorId}][quantity]"
-                                            class="form-control" value="0"
+                                            class="form-control quantity" value="0"
                                             oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/^(\d*\.\d{0,2}|\d*)$/, '$1'); " 
                                         />
 
@@ -857,10 +871,26 @@
                 submitButton.prop('disabled', true);
                 submitButton.removeClass('px-5');
 
-                submitButton.html(`<div class="d-flex align-items-center gap-1">
+                submitButton.html(`<div class="gap-1 d-flex align-items-center">
                     <div class="spinner-border" role="status"></div>
                     <span>Updating...</span>
                 </div>`)
+            });
+
+            
+
+
+         $(document).on('input change', '.quantity', function () {
+                let qty = 0;
+
+                $('.quantity').each(function () {
+                    let val = parseInt($(this).val(), 10);
+                    if (!isNaN(val)) {
+                        qty += val;
+                    }
+                });
+
+                $('#quantity').val(qty);
             });
         });
 

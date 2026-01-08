@@ -179,7 +179,8 @@ export const useBasketStore = defineStore("basketStore", {
                 axios.post("/cart/decrement",
                     {
                         product_id: product.id,
-                        color_id: product.color?.id ?? null
+                        color_id: product.color?.id ?? null,
+                         size_id: product.size?.id ?? null
                     },
                     {
                         headers: {
@@ -241,7 +242,8 @@ export const useBasketStore = defineStore("basketStore", {
             if (product) {
                 axios.post("/cart/increment", {
                     product_id: product.id,
-                    color_id: product.color?.id ?? null
+                    color_id: product.color?.id ?? null,
+                    size_id: product.size?.id ?? null
                 }, {
                     headers: {
                         Authorization: authStore.token,
@@ -274,7 +276,8 @@ export const useBasketStore = defineStore("basketStore", {
                 axios.post("/cart/delete",
                     {
                         product_id: product.id,
-                        color_id: product.color?.id ?? null
+                        color_id: product.color?.id ?? null,
+                         size_id: product.size?.id ?? null
                     },
                     {
                         headers: {

@@ -1,14 +1,14 @@
 <template>
     <div class="main-container">
         <div v-show="!isLoading" class="grid grid-cols-1 xl:grid-cols-4">
-            <div class="xl:col-span-3 col-span-1 lg:pr-6">
-                <div class="flex items-center gap-2 overflow-hidden pt-4">
+            <div class="col-span-1 xl:col-span-3 lg:pr-6">
+                <div class="flex items-center gap-2 pt-4 overflow-hidden">
                     <router-link to="/" class="w-6 h-6">
                         <HomeIcon class="w-5 h-5 text-slate-600" />
                     </router-link>
 
-                    <div class="grow w-full overflow-hidden">
-                        <div class="space-x-1 text-slate-600 text-sm font-normal truncate">
+                    <div class="w-full overflow-hidden grow">
+                        <div class="space-x-1 text-sm font-normal truncate text-slate-600">
                             <router-link to="/">{{ $t('Home') }}</router-link>
                             <span>/</span>
                             <span>{{ product . name }} </span>
@@ -16,19 +16,19 @@
                     </div>
                 </div>
 
-                <div class="flex flex-wrap lg:flex-nowrap gap-4 mt-6">
+                <div class="flex flex-wrap gap-4 mt-6 lg:flex-nowrap">
                     <div class="lg:w-[480px] w-full">
                         <div class="w-full">
-                            <div class="bg-slate-50 rounded-xl border border-slate-100 px-6">
+                            <div class="px-6 border bg-slate-50 rounded-xl border-slate-100">
 
                                 <swiper v-show="showCustom" id="customdiv" :spaceBetween="10" :thumbs="{ swiper: thumbsSwiper }"
                                     :modules="modules" class="product-details-slider">
                                     <swiper-slide class="max-h-[448px] h-auto">
-                                        <div class="zoom-container h-full" @mousemove="handleMouseMove"
+                                        <div class="h-full zoom-container" @mousemove="handleMouseMove"
                                             @mouseleave="resetZoom" @touchstart="handleMouseMove"
                                             @touchmove="handleMouseMove" @touchend="resetZoom">
                                             <img id="main-thumbnail" :src="selectedImage" alt="thumbnail"
-                                                class="zoom-image h-full w-full object-contain" />
+                                                class="object-contain w-full h-full zoom-image" />
                                         </div>
                                     </swiper-slide>
                                 </swiper>
@@ -38,15 +38,15 @@
                                     <swiper-slide v-for="thumbnail in product.thumbnails" :key="thumbnail.id"
                                         class="max-h-[448px] h-auto">
 
-                                        <div v-if="thumbnail.thumbnail" class="zoom-container h-full"
+                                        <div v-if="thumbnail.thumbnail" class="h-full zoom-container"
                                             @mousemove="handleMouseMove" @mouseleave="resetZoom"
                                             @touchstart="handleMouseMove" @touchmove="handleMouseMove"
                                             @touchend="resetZoom">
                                             <img :src="thumbnail.thumbnail" alt="thumbnail"
-                                                class="zoom-image h-full w-full object-contain" />
+                                                class="object-contain w-full h-full zoom-image" />
                                         </div>
 
-                                        <div v-else class="h-full w-full bg-slate-200 flex justify-center items-center">
+                                        <div v-else class="flex items-center justify-center w-full h-full bg-slate-200">
                                             <video v-if="thumbnail.type == 'file'" controls class="w-full">
                                                 <source :src="thumbnail.url" type="video/mp4">
                                             </video>
@@ -63,15 +63,15 @@
                                     :modules="modules" class="product-details-thumbnail">
                                     <swiper-slide v-for="thumbnail in product.thumbnails" :key="thumbnail.id">
                                         <img v-if="thumbnail.thumbnail" :src="thumbnail.thumbnail" alt=""
-                                            class="h-full w-full object-cover changeshowcolordiv" />
+                                            class="object-cover w-full h-full changeshowcolordiv" />
 
                                         <div v-else
-                                            class="h-full w-full bg-slate-200 flex justify-center items-center changeshowcolordiv">
-                                            <video v-if="thumbnail.type == 'file'" class="h-full w-full">
+                                            class="flex items-center justify-center w-full h-full bg-slate-200 changeshowcolordiv">
+                                            <video v-if="thumbnail.type == 'file'" class="w-full h-full">
                                                 <source :src="thumbnail.url" type="video/mp4">
                                             </video>
                                             <div v-else
-                                                class="h-full w-full overflow-hidden flex justify-center items-center">
+                                                class="flex items-center justify-center w-full h-full overflow-hidden">
                                                 <img :src="'/assets/icons/video-player.svg'" alt=""
                                                     width="70" height="70">
                                             </div>
@@ -88,20 +88,20 @@
                         <div v-if="flashSale"
                             class="bg-slate-100 mb-3 sm:mb-6 rounded-lg sm:rounded-[44px] flex items-center justify-start gap-2 sm:gap-5 overflow-hidden flex-col sm:flex-row">
                             <div
-                                class="px-4 sm:px-8 py-2 bg-gradient-to-l from-primary to-primary-800 w-full sm:w-auto">
-                                <div class="text-white text-sm sm:text-base font-bold leading-normal">
+                                class="w-full px-4 py-2 sm:px-8 bg-gradient-to-l from-primary to-primary-800 sm:w-auto">
+                                <div class="text-sm font-bold leading-normal text-white sm:text-base">
                                     {{ $t('Flash Sale') }}
                                 </div>
                             </div>
 
-                            <div class="h-full flex justify-center items-center flex-wrap pb-2 sm:pb-0">
-                                <div class="text-center text-primary text-sm font-normal leading-tight pr-2">
+                            <div class="flex flex-wrap items-center justify-center h-full pb-2 sm:pb-0">
+                                <div class="pr-2 text-sm font-normal leading-tight text-center text-primary">
                                     {{ $t('Ending in') }}
                                 </div>
 
                                 <!-- Days, Hours, Minutes, Seconds -->
-                                <div class="flex justify-center items-center gap-1 text-white">
-                                    <div v-if="endDay > 0" class="p-1 justify-center items-center gap-1 inline-flex">
+                                <div class="flex items-center justify-center gap-1 text-white">
+                                    <div v-if="endDay > 0" class="inline-flex items-center justify-center gap-1 p-1">
                                         <div
                                             class="text-center text-primary text-base font-semibold font-['Inter'] leading-none">
                                             {{ endDay }}
@@ -112,8 +112,8 @@
                                         </div>
                                     </div>
 
-                                    <span v-if="endDay > 0" class="text-black text-base font-bold">:</span>
-                                    <div class="p-1 justify-center items-center gap-1 inline-flex">
+                                    <span v-if="endDay > 0" class="text-base font-bold text-black">:</span>
+                                    <div class="inline-flex items-center justify-center gap-1 p-1">
                                         <div class="text-center text-primary text-base font-semibold font-['Inter']">
                                             {{ endHour }}
                                         </div>
@@ -123,8 +123,8 @@
                                         </div>
                                     </div>
 
-                                    <span class="text-black text-base font-bold">:</span>
-                                    <div class="p-1 justify-center items-center gap-1 inline-flex">
+                                    <span class="text-base font-bold text-black">:</span>
+                                    <div class="inline-flex items-center justify-center gap-1 p-1">
                                         <div class="text-center text-primary text-base font-semibold font-['Inter']">
                                             {{ endMinute }}
                                         </div>
@@ -134,8 +134,8 @@
                                         </div>
                                     </div>
 
-                                    <span v-if="endDay <= 0" class="text-black text-base font-bold">:</span>
-                                    <div v-if="endDay <= 0" class="p-1 justify-center items-center gap-1 inline-flex">
+                                    <span v-if="endDay <= 0" class="text-base font-bold text-black">:</span>
+                                    <div v-if="endDay <= 0" class="inline-flex items-center justify-center gap-1 p-1">
                                         <div class="text-center text-primary text-base font-semibold font-['Inter']">
                                             {{ endSecond }}
                                         </div>
@@ -163,14 +163,19 @@
 
                                 <div class="flex flex-wrap items-center gap-3">
                                     <div v-for="size in product.sizes" :key="size.id" class="relative">
-                                        <input type="radio" name="size" :id="'size-' + size.id"
-                                            class="peer hidden" :value="size.id" v-model="formData.size" />
+                                        <input type="radio" name="size" class="hidden peer"  :id="'size-' + size.id" :value="Number(size.id)"
+                                            v-model.number="formData.size" :disabled="size.quantity <= 0" />
                                         <label :for="'size-' + size.id"
-                                            class="min-w-11 w-auto h-9 flex justify-center items-center border-2 border-slate-200 rounded-md cursor-pointer peer-checked:border-primary peer-checked:bg-primary-100 px-2">
-                                            {{ size . name }}
+                                            :class="[
+                                                'px-2 py-1 flex justify-center items-center border-2 rounded-md',
+                                                size.quantity <= 0 ?
+                                                'cursor-not-allowed border-slate-300 bg-gray-200 opacity-60 disabled' :
+                                                'cursor-pointer border-slate-200 peer-checked:border-primary peer-checked:bg-primary-100',
+                                           ]">
+                                            {{ size.name }}
                                         </label>
                                     </div>
-                                    <div v-if="!product.sizes" class="text-slate-500 text-base font-normal">
+                                    <div v-if="!product.sizes" class="text-base font-normal text-slate-500">
                                         {{ $t('N/A') }}
                                     </div>
                                 </div>
@@ -185,7 +190,7 @@
                                 <div class="flex flex-wrap items-center gap-3">
                                     <div v-for="color in product.colors" :key="color.id" class="relative">
                                         <input @change="updateImage(color.image)" type="radio" name="color"
-                                            class="peer hidden" :id="'color-' + color.id" :value="Number(color.id)"
+                                            class="hidden peer" :id="'color-' + color.id" :value="Number(color.id)"
                                             v-model.number="formData.color" :disabled="color.quantity <= 0">
 
                                         <label :for="'color-' + color.id"
@@ -200,7 +205,7 @@
                                     </div>
 
 
-                                    <div v-if="!product.colors" class="text-slate-500 text-base font-normal">
+                                    <div v-if="!product.colors" class="text-base font-normal text-slate-500">
                                         {{ $t('N/A') }}
                                     </div>
                                 </div>
@@ -210,31 +215,31 @@
                         &nbsp;
                         <!-- Title -->
                         <label v-if="product?.quantity === 0"
-                            class="bg-gray-500 text-white text-xs px-2 py-1 font-semibold uppercase"> Sold Out
+                            class="px-2 py-1 text-xs font-semibold text-white uppercase bg-gray-500"> Sold Out
                         </label>
-                        <div class="mt-3 text-slate-950 text-2xl font-medium leading-normal">
+                        <div class="mt-3 text-2xl font-medium leading-normal text-slate-950">
                             {{ product . name }}
                         </div>
 
                         <!-- Short Description -->
-                        <div class="mt-2 text-slate-700 text-base font-normal leading-normal">
+                        <div class="mt-2 text-base font-normal leading-normal text-slate-700">
                             {{ product . short_description }}
                         </div>
 
                         <!-- Rating  review, sold and share -->
-                        <div class="py-5 flex flex-wrap justify-start items-center gap-4 border-b border-slate-200">
+                        <div class="flex flex-wrap items-center justify-start gap-4 py-5 border-b border-slate-200">
                             <!-- rating -->
                             <!--<div class="flex items-center gap-2">-->
                             <!--    <div class="flex">-->
                             <!--        <StarIcon class="w-6 h-6 text-amber-500" />-->
-                            <!--        <StarIcon v-for="i in 4" :key="i" class="w-6 h-6 2xl:block hidden" :class="i < product.rating ? 'text-amber-500' : 'text-gray-300'-->
+                            <!--        <StarIcon v-for="i in 4" :key="i" class="hidden w-6 h-6 2xl:block" :class="i < product.rating ? 'text-amber-500' : 'text-gray-300'-->
                                                         <!--            " />-->
                             <!--    </div>-->
-                            <!--    <div class="text-slate-800 text-base font-bold">-->
+                            <!--    <div class="text-base font-bold text-slate-800">-->
                             <!--        {{ product . rating }}-->
                             <!--    </div>-->
                             <!-- Review -->
-                            <!--    <div class="text-slate-500 text-base font-normal">-->
+                            <!--    <div class="text-base font-normal text-slate-500">-->
                             <!--        {{ product . total_reviews }} {{ $t('Review') }}-->
                             <!--    </div>-->
                             <!--</div>-->
@@ -242,7 +247,7 @@
                             <!--<div class="w-[1px] h-4 bg-slate-200"></div>-->
 
                             <!-- Sold -->
-                            <!--<div class="text-slate-800 text-base font-normal leading-normal">-->
+                            <!--<div class="text-base font-normal leading-normal text-slate-800">-->
                             <!--    {{ product . total_sold }} {{ $t('Sold') }}-->
                             <!--</div>-->
 
@@ -251,7 +256,7 @@
                             <!-- Share -->
                             <button @click="copyUrl" class="flex items-center gap-2 border-none">
                                 <ShareIcon class="w-[18px] text-slate-600" />
-                                <span class="text-slate-800 text-base font-normal leading-normal">
+                                <span class="text-base font-normal leading-normal text-slate-800">
                                     {{ $t('Share') }}
                                 </span>
                             </button>
@@ -266,25 +271,25 @@
                         </div>
 
                         <!-- Price part -->
-                        <div class="flex items-center gap-3 py-4 border-b border-slate-200 flex-wrap">
+                        <div class="flex flex-wrap items-center gap-3 py-4 border-b border-slate-200">
                             <!-- discount Price -->
-                            <div class="text-primary text-3xl font-bold leading-9">
+                            <div class="text-3xl font-bold leading-9 text-primary">
                                 {{ masterStore . showCurrency(parseFloat(productPrice) . toFixed(2)) }}
                             </div>
 
                             <!-- Price -->
                             <div v-if="product.discount_price > 0"
-                                class="text-slate-400 text-2xl font-normal line-through leading-loose">
+                                class="text-2xl font-normal leading-loose line-through text-slate-400">
                                 {{ masterStore . showCurrency(parseFloat(mainPrice) . toFixed(2)) }}
                             </div>
 
                             <!-- discount -->
                             <div v-if="discountPercentage > 0"
-                                class="px-2 py-1 bg-red-500 rounded-2xl text-white text-base font-medium">
+                                class="px-2 py-1 text-base font-medium text-white bg-red-500 rounded-2xl">
                                 {{ discountPercentage }}% {{ $t('OFF') }}
                             </div>
                         </div>
-
+                        <!-- mobile -->
                         <div class="hidden md:block">
                             <!-- Size -->
                             <div v-if="product.sizes?.length > 0" class="flex items-center gap-3 py-4">
@@ -295,13 +300,19 @@
                                 <div class="flex flex-wrap items-center gap-3">
                                     <div v-for="size in product.sizes" :key="size.id" class="relative">
                                         <input type="radio" name="size" :id="'size-' + size.id"
-                                            class="peer hidden" :value="size.id" v-model="formData.size" />
+                                            class="hidden peer" :value="size.id" v-model="formData.size"
+                                            :disabled="size.quantity <= 0" />
                                         <label :for="'size-' + size.id"
-                                            class="min-w-11 w-auto h-9 flex justify-center items-center border-2 border-slate-200 rounded-md cursor-pointer peer-checked:border-primary peer-checked:bg-primary-100 px-2">
-                                            {{ size . name }}
+                                         :class="[
+                                                'px-2 py-1 flex justify-center items-center border-2 rounded-md',
+                                                size.quantity <= 0 ?
+                                                'cursor-not-allowed border-slate-300 bg-gray-200 opacity-60 disabled' :
+                                                'cursor-pointer border-slate-200 peer-checked:border-primary peer-checked:bg-primary-100',
+                                            ]">
+                                            {{ size.name }}
                                         </label>
                                     </div>
-                                    <div v-if="!product.sizes" class="text-slate-500 text-base font-normal">
+                                    <div v-if="!product.sizes" class="text-base font-normal text-slate-500">
                                         {{ $t('N/A') }}
                                     </div>
                                 </div>
@@ -316,7 +327,7 @@
                                 <div class="flex flex-wrap items-center gap-3">
                                     <div v-for="color in product.colors" :key="color.id" class="relative">
                                         <input @change="updateImage(color.image)" type="radio" name="color"
-                                            :id="'color-' + color.id" class="peer hidden change-image-btn"
+                                            :id="'color-' + color.id" class="hidden peer change-image-btn"
                                             :value="color.id" v-model="formData.color"
                                             :disabled="color.quantity <= 0" />
 
@@ -332,7 +343,7 @@
                                     </div>
 
 
-                                    <div v-if="!product.colors" class="text-slate-500 text-base font-normal">
+                                    <div v-if="!product.colors" class="text-base font-normal text-slate-500">
                                         {{ $t('N/A') }}
                                     </div>
                                 </div>
@@ -343,16 +354,16 @@
                             <!-- Quantity Increase Or Decrease -->
                             <!-- <div v-if="cartProduct"
                                 class="p-2 rounded-[10px] border border-slate-100 inline-flex gap-4">
-                                <button class="bg-slate-200 p-2 rounded" @click="decrementQty">
+                                <button class="p-2 rounded bg-slate-200" @click="decrementQty">
                                     <MinusIcon class="w-6 h-6 text-slate-800" />
                                 </button>
 
                                 <div
-                                    class="w-6 flex items-center justify-center text-center text-slate-950 text-base font-medium leading-normal">
+                                    class="flex items-center justify-center w-6 text-base font-medium leading-normal text-center text-slate-950">
                                     {{ cartProduct . quantity }}
                                 </div>
 
-                                <button class="bg-slate-100 p-2 rounded" @click="incrementQty">
+                                <button class="p-2 rounded bg-slate-100" @click="incrementQty">
                                     <PlusIcon class="w-6 h-6 text-slate-800" />
                                 </button>
                             </div> -->
@@ -390,12 +401,12 @@
                     </div>
                 </div>
 
-                <div class="block xl:hidden w-full pt-6 border-slate-200">
+                <div class="block w-full pt-6 xl:hidden border-slate-200">
                     <ProductDetailsRightSide :product="product" :popularProducts="popularProducts" />
                 </div>
 
-                <div class="flex items-center gap-8 flex-wrap border-b mt-3 mb-4 xl:my-6">
-                    <button class="py-3 transition text-base font-medium leading-normal border-b"
+                <div class="flex flex-wrap items-center gap-8 mt-3 mb-4 border-b xl:my-6">
+                    <button class="py-3 text-base font-medium leading-normal transition border-b"
                         :class="aboutProduct
                             ?
                             'text-primary border-primary' :
@@ -404,7 +415,7 @@
                         {{ $t('About Product') }}
                     </button>
 
-                    <!-- <button class="py-3 transition text-base font-medium leading-normal border-b" :class="review
+                    <!-- <button class="py-3 text-base font-medium leading-normal transition border-b" :class="review
                         ?
                         'text-primary border-primary' :
                         'text-slate-600 border-transparent'" @click="showReview()">
@@ -414,12 +425,12 @@
 
                 <!-- About Product -->
                 <div v-if="aboutProduct" class="description">
-                    <div class="prose max-w-none w-full m-0" v-html="product.description"></div>
+                    <div class="w-full m-0 prose max-w-none" v-html="product.description"></div>
                 </div>
 
                 <!-- Reviews -->
                 <!--<div v-if="review" class="">
-                    <div class="text-slate-950 text-lg lg:text-2xl font-medium leading-loose mb-4">
+                    <div class="mb-4 text-lg font-medium leading-loose text-slate-950 lg:text-2xl">
                         {{ $t('Rating and Review') }}
                     </div> -->
 
@@ -430,18 +441,18 @@
                     </div> -->
 
                 <!-- Reviews -->
-                <!-- <div class="border-t border-slate-200 mt-6">
-                        <div class="mt-4 lg:mt-6 text-slate-950 text-lg lg:text-2xl font-medium leading-loose">
+                <!-- <div class="mt-6 border-t border-slate-200">
+                        <div class="mt-4 text-lg font-medium leading-loose lg:mt-6 text-slate-950 lg:text-2xl">
                             {{ $t('Reviews') }}
                         </div>
 
-                        <div class="space-y-6 mt-6">
+                        <div class="mt-6 space-y-6">
                             <Review v-for="review in reviews" :key="review.id" :review="review" />
                         </div> -->
 
                 <!-- pagination's -->
-                <!-- <div class="flex justify-between items-center w-full mt-8 gap-4 flex-wrap">
-                            <div class="text-slate-800 text-base font-normal leading-normal">
+                <!-- <div class="flex flex-wrap items-center justify-between w-full gap-4 mt-8">
+                            <div class="text-base font-normal leading-normal text-slate-800">
                                 {{ $t('Showing') }} {{ perPage * (currentPage - 1) + 1 }}
                                 {{ $t('to') }}
                                 {{ perPage * (currentPage - 1) + reviews . length }}
@@ -458,7 +469,7 @@
             </div>
 
             <!-- Right side -->
-            <div class="hidden xl:block col-span-1 w-full pt-6 h-full xl:pt-16 border-slate-200 xl:pb-6"
+            <div class="hidden w-full h-full col-span-1 pt-6 xl:block xl:pt-16 border-slate-200 xl:pb-6"
                 :class="masterStore.langDirection == 'rtl' ? 'xl:pr-8 xl:border-r' : 'xl:pl-8 xl:border-l'">
                 <ProductDetailsRightSide :product="product" :popularProducts="popularProducts" />
             </div>
@@ -466,12 +477,12 @@
 
         <!-- Similar Products -->
         <div v-if="relatedProducts.length > 0 && !isLoading">
-            <div class="mt-4 xl:mt-6 text-slate-800 text-lg md:text-2xl lg:text-3xl font-bold leading-9">
+            <div class="mt-4 text-lg font-bold leading-9 xl:mt-6 text-slate-800 md:text-2xl lg:text-3xl">
                 {{ $t('Similar Products') }}
             </div>
 
             <div
-                class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-6 items-start my-6">
+                class="grid items-start grid-cols-2 gap-3 my-6 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 sm:gap-6">
                 <div v-for="product in relatedProducts" :key="product.id">
                     <ProductCard :product="product" />
                 </div>
@@ -480,13 +491,13 @@
 
         <!-- page loader -->
         <div v-if="isLoading" class="grid grid-cols-1 xl:grid-cols-4">
-            <div class="xl:col-span-3 col-span-1 lg:pr-6">
-                <div class="flex items-center gap-2 overflow-hidden pt-6">
+            <div class="col-span-1 xl:col-span-3 lg:pr-6">
+                <div class="flex items-center gap-2 pt-6 overflow-hidden">
                     <SkeletonLoader class="w-40 h-4" />
                 </div>
-                <div class="flex flex-wrap lg:flex-nowrap gap-4 mt-6">
+                <div class="flex flex-wrap gap-4 mt-6 lg:flex-nowrap">
                     <div class="lg:w-[480px] w-full lg:shrink-0">
-                        <SkeletonLoader class="w-full h-52 md:h-80 rounded-lg" />
+                        <SkeletonLoader class="w-full rounded-lg h-52 md:h-80" />
 
                         <div class="flex flex-grow gap-3 mt-4">
                             <SkeletonLoader v-for="i in 4" class="w-20 h-16 grow" />
@@ -521,7 +532,7 @@
                             <SkeletonLoader class="w-full h-3 rounded-xl" />
                         </div>
                         <div class="flex flex-col gap-4 mt-4">
-                            <SkeletonLoader v-for="i in 2" class="w-full h-20 md:h-36 rounded-lg" />
+                            <SkeletonLoader v-for="i in 2" class="w-full h-20 rounded-lg md:h-36" />
                         </div>
                     </div>
                 </div>
@@ -529,9 +540,9 @@
 
             <!-- Right side -->
             <div
-                class="hidden xl:block col-span-1 w-full pt-6 h-full xl:pt-16 xl:pl-8 xl:border-l border-slate-200 xl:pb-6">
+                class="hidden w-full h-full col-span-1 pt-6 xl:block xl:pt-16 xl:pl-8 xl:border-l border-slate-200 xl:pb-6">
                 <div class="flex flex-col gap-4 mt-4">
-                    <SkeletonLoader v-for="i in 5" class="w-full h-20 md:h-36 rounded-lg" />
+                    <SkeletonLoader v-for="i in 5" class="w-full h-20 rounded-lg md:h-36" />
                 </div>
             </div>
         </div>

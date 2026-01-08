@@ -94,12 +94,8 @@ class ProductRepository extends Repository
 
         $keywords = implode(',', $request->meta_keywords ?? []);
         
-         $colorquantity = 0;
-
-        foreach ($request->color ?? [] as $color) {
-            $colorquantity += $color['quantity'] ?? 0;
-        }
-        $quantity = (($request->quantity ?? 0) + $colorquantity);
+       
+        $quantity = $request->quantity ?? 0;
 
         $product = self::create([
             'shop_id' => $shop?->id,
@@ -183,9 +179,12 @@ class ProductRepository extends Repository
             }
         } else {
             foreach ($request->size ?? [] as $size) {
-                $product->sizes()->attach($size['id'], ['price' => $size['price']]);
-            }
-
+                $product->sizes()->attach($size['id'], [
+                    'price' => $size['price'],
+                    'code' =>  $size['code'],
+                       'quantity' =>  $size['quantity'] ?? 0
+                    ]);
+                }
             // sync tax
             $product->vatTaxes()->sync($request->taxes ?? []);
         }
@@ -236,13 +235,8 @@ class ProductRepository extends Repository
         $description = Purifier::clean(self::sanitizeUnicode($request->description));
         $keywords = implode(',', $request->meta_keywords ?? []);
         
-        $colorquantity = 0;
-
-        foreach ($request->color ?? [] as $color) {
-            $colorquantity += $color['quantity'] ?? 0;
-        }
-        $quantity = (($request->quantity ?? 0) + $colorquantity);
-
+    
+        $quantity = $request->quantity ?? 0;
 
         self::update($product, [
             'name' => $request->name,
@@ -307,7 +301,6 @@ class ProductRepository extends Repository
                         'image' =>  $imagePath, // Adjust based on your storage setup
                         'code' =>  $color['code'],
                         'quantity' =>  $color['quantity']
-
                     ]);
                 } else {
                     // dd($color);
@@ -342,12 +335,18 @@ class ProductRepository extends Repository
             if ($request->size && is_array($request->size)) {
                 foreach ($request->size ?? [] as $size) {
                     $price = 0;
-                    $product->sizes()->attach($size, ['price' => $price]);
+                    $product->sizes()->attach($size, [
+                        'price' => $price
+                    ]);
                 }
             }
         } else {
             foreach ($request->size ?? [] as $size) {
-                $product->sizes()->attach($size['id'], ['price' => $size['price']]);
+                $product->sizes()->attach($size['id'], [
+                    'price' => $size['price'],
+                    'code' =>  $size['code'],
+                    'quantity' =>  $size['quantity'] ?? 0
+                ]);
             }
         }
 

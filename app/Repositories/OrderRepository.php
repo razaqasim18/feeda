@@ -89,7 +89,11 @@ class OrderRepository extends Repository
                     }
                 }
 
-                $sizePrice = $product->sizes()?->where('id', $cart->size)->first()?->pivot?->price ?? 0;
+                $sizeproduct = $product->sizes()?->where('id', $cart->size)->first();
+                if($sizeproduct){
+                    $sizeproduct?->pivot?->decrement('quantity', $cart->quantity);
+                }
+                $sizePrice = $sizeproduct?->pivot?->price ?? 0;
                 $price = $price + $sizePrice;
 
                 $colorproduct = $product->colors()?->where('id', $cart->color)->first();

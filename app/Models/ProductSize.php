@@ -9,5 +9,5 @@ class ProductSize extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $guarded = ['id','price', 'quantity', 'code'];
 }

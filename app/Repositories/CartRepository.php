@@ -119,6 +119,7 @@ class CartRepository extends Repository
     {
         $size = $request->size;
         $color = $request->color;
+        $size = $request->size;
         $unit = $request->unit ?? $product->unit?->name;
 
         $isBuyNow = $request->is_buy_now ?? false;
@@ -128,6 +129,7 @@ class CartRepository extends Repository
         $cart = $customer->carts()?->where('product_id', $product->id)
             ->where('is_buy_now', $isBuyNow)
             ->where('color', $color)
+            ->where('size', $size)
             ->first();
 
         if ($cart) {

@@ -59,9 +59,7 @@ class CartController extends Controller
 
         $cartQty = $cart?->quantity ?? 0;
         $requestedQty = $quantity + $cartQty;
-        /**
-         * If product has color
-         */
+        
         if ($color) {
             $colorQuantity = $color->pivot->quantity ?? 0;
             //   dd($requestedQty);
@@ -73,11 +71,7 @@ class CartController extends Controller
                     422
                 );
             }
-        }
-        /**
-         * If product has NO color
-         */
-        else {
+        }else {
             if ($requestedQty > $product->quantity) {
                 return $this->json(
                     'Sorry! Product stock is limited. No more stock availables.',
@@ -87,7 +81,28 @@ class CartController extends Controller
             }
         }
 
-
+        $size = $product->sizes()
+            ->where('id', $request->size)
+            ->first();
+           
+        if ($size) {
+            $sizeQuantity = $size->pivot->quantity ?? 0;
+            if ($requestedQty > $sizeQuantity) {
+                return $this->json(
+                    'Sorry! Selected size stock is limited. No more stock available.',
+                    [],
+                    422
+                );
+            }
+        }else {
+            if ($requestedQty > $product->quantity) {
+                return $this->json(
+                    'Sorry! Product stock is limited. No more stock availables.',
+                    [],
+                    422
+                );
+            }
+        }    
 
         // if (($product->quantity < $quantity) || ($product->quantity <= $cart?->quantity)) {
         //     return $this->json('Sorry! product cart quantity is limited. No more stock', [], 422);
@@ -117,14 +132,17 @@ class CartController extends Controller
 
         $product = ProductRepository::find($request->product_id);
         $color = $request->color_id;
+        $size = $request->size_id;
+      
         $customer = auth()->user()->customer;
 
         $cart = $customer->carts()?->where('product_id', $product->id)
             ->where('is_buy_now', $isBuyNow)
             ->where('color', $color)
+            ->where('size', $size)
             ->first();
 
-        if (! $cart) {
+        if (!$cart) {
             return $this->json('Sorry product not found in cart', [], 422);
         }
 
@@ -147,13 +165,24 @@ class CartController extends Controller
         $color = $product->colors()?->where('id', $request->color_id)->first();
         $colorquantity = $color?->pivot?->quantity ?? 0;
 
+        $size = $product->sizes()?->where('id', $request->size_id)->first();
+        $sizequantity = $size?->pivot?->quantity ?? 0;
 
-        if ($productQty > $quantity && $colorquantity > $quantity) {
+
+        if (
+            $productQty > $quantity &&
+            $colorquantity > $quantity &&
+            $sizequantity > $quantity
+        ) {
             $cart->update([
                 'quantity' => $quantity + 1,
             ]);
         } else {
-            return $this->json('Sorry! product cart quantity is limited. No more stock', [], 422);
+            return $this->json(
+                'Sorry! product cart quantity is limited. No more stock',
+                [],
+                422
+            );
         }
 
         $carts = $customer->carts()->where('is_buy_now', $isBuyNow)->get();
@@ -176,10 +205,12 @@ class CartController extends Controller
 
         $product = ProductRepository::find($request->product_id);
         $color = $request->color_id;
+         $size = $request->size_id;
         $customer = auth()->user()->customer;
         $cart = $customer->carts()?->where('product_id', $product->id)
             ->where('is_buy_now', $isBuyNow)
             ->where('color', $color)
+            ->where('size', $size)
             ->first();
 
         if (! $cart) {

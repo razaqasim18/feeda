@@ -18,6 +18,7 @@ class SizeResource extends JsonResource
         $lang = request()->header('accept-language') ?? 'en';
 
         $price = $this->pivot->price ?? 0;
+         $quantity = $this->pivot->quantity ?? 0;
         $product = ProductRepository::find($this->pivot?->product_id);
 
         // Calculate VAT extra price
@@ -37,6 +38,8 @@ class SizeResource extends JsonResource
             'id' => $this->id,
             'name' => $translation ? $translation->name : $this->name,
             'price' => (float) number_format($price, 2, '.', ''),
+             'quantity' => $quantity,
+           
         ];
     }
 }
