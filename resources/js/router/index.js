@@ -21,6 +21,7 @@ const BrandProduct = () => import("../pages/BrandProduct.vue");
 const Checkout = () => import("../pages/Checkout.vue");
 
 const Dashboard = () => import("../pages/Dashboard.vue");
+const PointRedeem = () => import("../pages/PointRedeem.vue");
 const OrderHistory = () => import("../pages/OrderHistory.vue");
 const OrderDetails = () => import("../pages/OrderDetails.vue");
 const Wishlist = () => import("../pages/Wishlist.vue");
@@ -185,6 +186,15 @@ const routes = [
         meta: {
             layout: authLayout,
             title: "Dashboard",
+        },
+    },
+    {
+        path: "/point-redeem",
+        name: "pointredeem",
+        component: PointRedeem,
+        meta: {
+            layout: authLayout,
+            title: "Point Redeem",
         },
     },
     {

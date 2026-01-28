@@ -103,6 +103,22 @@
                             placeholder="Enter Season Discount Tab" :value="$generaleSetting?->season_discount" />
                     </div>
 
+
+                    <div class="col-12 col-md-6 mb-3">
+                        <div class="mt-4">
+                            <x-input type="number" label="1 Point is equal to below  1 {{ generaleSetting('defaultCurrency')->name.generaleSetting('defaultCurrency')->symbol }}" name="point"
+                                placeholder="Enter {{ generaleSetting('defaultCurrency')->name.generaleSetting('defaultCurrency')->symbol }} for per point" :value="$generaleSetting?->point ?: 0"   />
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 mb-3">
+                        <div class="mt-4">
+                            <x-input type="number" label="Point Redeem Coupon Day" name="point_valid_day"
+                                placeholder="Enter Days Coupon is Valid till" :value="$generaleSetting?->point_valid_day ?: 1"   />
+                        </div>
+                    </div>
+
+
                 </div>
 
             </div>

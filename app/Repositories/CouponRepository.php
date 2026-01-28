@@ -8,6 +8,7 @@ use App\Http\Requests\CouponRequest;
 use App\Models\AdminCoupon;
 use App\Models\BirthdayCoupon;
 use App\Models\Coupon;
+use App\Models\PointRedeemCoupon;
 use App\Models\Product;
 use App\Models\Shop;
 use Carbon\Carbon;
@@ -226,6 +227,51 @@ class CouponRepository extends Repository
         ];
     }
 
+     // get point redeem discount amount and total amount
+    public static function getPointredeemCouponDiscount($request)
+    {
+        $productsCollection = collect($request->products);
+        $shopProducts = $productsCollection->groupBy('shop_id');
+
+        $totalOrderAmount = 0; // total amount
+        $totalDiscountAmount = 0;
+        $coupon = null;
+
+        $couponCode = $request->coupon_code ?? null;
+        foreach ($shopProducts as $shopId => $products) {
+
+            $totalAmount = 0; // total amount
+            foreach ($products as $productArray) {
+                $product = Product::find($productArray['id']);
+                $totalAmount += (float) ($product->discount_price > 0 ? $product->discount_price : $product->price) * $productArray['quantity'];
+            }
+
+            if ($couponCode) {
+                $shop = Shop::find($shopId);
+                $coupon = PointRedeemCoupon::where('code', $couponCode)
+                    ->where('user_id', Auth::user()->id)
+                    ->where('is_active', '1')
+                    ->where('is_used', '0')
+                    ->where('started_at', '<=', Carbon::now())
+                    ->where('expired_at', '>=', Carbon::now())
+                    ->first();
+
+
+                if ($coupon) {
+                    $discount = self::getpointRedeemCouponDiscountAmount($coupon, $totalAmount);
+                    $totalOrderAmount += (float) $discount['total_amount'];
+                    $totalDiscountAmount += (float) $discount['discount_amount'];
+                }
+            }
+        }
+
+        return [
+            'total_amount' => $totalOrderAmount,
+            'discount_amount' => $totalDiscountAmount,
+            'coupon' => $coupon,
+        ];
+    }
+
     /**
      * Get coupon discount amount
      *
@@ -254,6 +300,22 @@ class CouponRepository extends Repository
     }
 
     public static function getbirthdayCouponDiscountAmount($coupon, $totalAmount)
+    {
+        $amount = $coupon->type == DiscountType::PERCENTAGE->value ? ($totalAmount * $coupon->discount) / 100 : $coupon->discount;
+
+        $couponDiscount = 0;
+        $couponDiscount = $amount;
+        if ($coupon->max_discount_amount && $coupon->max_discount_amount < $amount) {
+            $couponDiscount = $coupon->max_discount_amount;
+        }
+
+        return [
+            'total_amount' => $totalAmount,
+            'discount_amount' => (float) round($couponDiscount ?? 0, 2),
+        ];
+    }
+
+    public static function getpointRedeemCouponDiscountAmount($coupon, $totalAmount)
     {
         $amount = $coupon->type == DiscountType::PERCENTAGE->value ? ($totalAmount * $coupon->discount) / 100 : $coupon->discount;
 

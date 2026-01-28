@@ -99,7 +99,6 @@ class MasterController extends Controller
         // phone min and max length
         $phoneMinLength = $verifyManage?->phone_min_length > 0 ? $verifyManage?->phone_min_length : 9;
         $phoneMaxLength = $verifyManage?->phone_max_length > 0 ? $verifyManage?->phone_max_length : 16;
-
         return $this->json('Master data', [
             'currency' => [
                 'name' => $defaultCurrency?->name ?? 'USD',
@@ -145,7 +144,8 @@ class MasterController extends Controller
                 ? asset('storage/' . Video::first()->media->src)
                 : '',
             'videoslink' => Video::first(),
-
+            'point' => $generaleSetting?->point ?? 0,
+            'point_valid_day' => $generaleSetting?->point_valid_day ?? 0,
         ]);
     }
 }

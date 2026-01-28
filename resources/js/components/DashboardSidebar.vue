@@ -18,6 +18,12 @@
                 {{ $t('Dashboard') }}
             </router-link>
 
+            <router-link to="/point-redeem" class="routerLink group">
+                <Squares2X2Icon class="w-5 h-5 md:w-6 md:h-6 hidden group-[&.router-link-active]:block"/>
+                <Squares2X2IconOutline class="w-5 h-5 md:w-6 md:h-6 block group-[&.router-link-active]:hidden"/>
+                {{ $t('Point Redeem Coupon') }}
+            </router-link>
+
             <router-link to="/order-history" class="routerLink group" :class="route.name == 'order-details' ? 'router-link-active' : ''">
                 <ArchiveBoxIcon class="w-5 h-5 md:w-6 md:h-6 hidden group-[&.router-link-active]:block"/>
                 <ArchiveBoxIconOutline class="w-5 h-5 md:w-6 md:h-6 block group-[&.router-link-active]:hidden"/>

@@ -86,6 +86,7 @@ class OrderController extends Controller
         $paymentMethod = $paymentMethods[array_search($toUpper, array_column(PaymentMethod::cases(), 'name'))];
 
         // Store the order
+      
         $payment = OrderRepository::storeByRequestFromCart($request, $paymentMethod, $carts);
 
         $paymentUrl = null;

@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\MailConfigurationController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentGatewayController;
+use App\Http\Controllers\Admin\PointController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\PusherConfigController;
@@ -294,6 +295,17 @@ Route::name('admin.')->group(function () {
             Route::get('/coupon/{coupon}/destroy', 'destroy')->name('coupon.destroy');
             Route::get('/coupon/{coupon}/toggle', 'statusToggle')->name('coupon.toggle');
         });
+
+        // points reward
+           Route::controller(PointController::class)->group(function () {
+       
+            Route::get('/points-redeem', 'index')->name('point.redeem.index');
+            Route::post('/points-redeem/store', 'store')->name('point.redeem.store');
+            Route::put('/points-redeem/edit/{id}', 'update')->name('point.redeem.update');
+
+            Route::get('/points-coupon/list', 'indexCoupon')->name('point.coupon.index');
+        });
+
 
         Route::controller(BirthdayCouponController::class)->group(function () {
             Route::get('/birthday-coupons', 'index')->name('birthday.coupon.index');

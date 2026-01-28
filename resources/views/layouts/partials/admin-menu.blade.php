@@ -329,25 +329,51 @@
     'admin.ad.index',
     'admin.coupon.index',
     'admin.customerNotification.index',
-    'admin.blog.index'
+    'admin.blog.index',
+
+    'admin.points.setting',
+    
 ])
     <li class="menu-divider">
         <span class="menu-title">{{ __('Marketing Promotions') }}</span>
     </li>
 @endhasPermission
-@hasPermission('admin.banner.index')
-    <!--- banner--->
-    <li>
-        <a class="menu {{ $request->routeIs('admin.banner.*') ? 'active' : '' }}"
-            href="{{ route('admin.banner.index') }}">
+
+@hasPermission('admin.points.setting')
+    <!--- admin.points.setting--->
+     <li>
+        <a class="menu {{ request()->routeIs('admin.point.*') ? 'active' : '' }}"
+            data-bs-toggle="collapse" href="#pointsMenu">
             <span>
-                <img class="menu-icon" src="{{ asset('assets/icons-admin/promotional.svg') }}" alt="icon"
+                <img class="menu-icon" src="{{ asset('assets/icons-admin/credit-card-convert.svg') }}" alt="icon"
                     loading="lazy" />
-                {{ __('Promotional Banner') }}
+                {{ __('Points & Reward') }}
             </span>
+            <img src="{{ asset('assets/icons-admin/caret-down.svg') }}" alt="icon" class="downIcon">
         </a>
+        <div class="collapse dropdownMenuCollapse {{ $request->routeIs('admin.point.*') ? 'show' : '' }}"
+            id="pointsMenu">
+            <div class="listBar">
+                @hasPermission('admin.point.redeem.index')
+                    <!--- point redeem --->
+                    <a href="{{ route('admin.point.redeem.index') }}"
+                        class="subMenu hasCount {{ request()->routeIs('admin.point.redeem.*') ? 'active' : '' }}">
+                        {{ __('Redeem Point') }}
+                    </a>
+                @endhasPermission
+
+                @hasPermission('admin.point.coupon.index')
+                  <!--- point coupon --->
+                    <a href="{{ route('admin.point.coupon.index') }}"
+                        class="subMenu hasCount {{ request()->routeIs('admin.point.coupon.*') ? 'active' : '' }}">
+                        {{ __('Redeem Point Coupon List') }}
+                    </a>
+                @endhasPermission
+            </div>
+        </div>
     </li>
 @endhasPermission
+
 
 @hasPermission('admin.video.index')
     <!--- video --->

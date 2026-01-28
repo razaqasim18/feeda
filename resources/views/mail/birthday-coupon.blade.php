@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="description" content="OTP Verification">
-    <title>OTP Verification</title>
+    <meta name="description" content="Birthday Coupon">
+    <title>Birthday Coupon</title>
     <style>
         body {
             font-family: Arial, sans-serif;

@@ -48,6 +48,8 @@ class GeneraleSettingRepository extends Repository
                 'mobile' => $request->mobile,
                 'address' => $request->address,
                 'season_discount' => $request->season_discount,
+                'point' => $request->point,
+                'point_valid_day' => $request->point_valid_day,
                 'show_download_app' => $request->show_download_app ? true : false,
                 'google_playstore_url' => $request->google_playstore_url,
                 'app_store_url' => $request->app_store_url,

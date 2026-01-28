@@ -99,12 +99,16 @@
             </div>
         </div>
 
-        <button v-if="!isProcessing" class="px-6 py-4 w-full mt-4 bg-primary rounded-[10px] text-white text-base font-medium"
+        <button v-if="!isProcessing"
+            class="px-6 py-4 w-full mt-4 bg-primary rounded-[10px] text-white text-base font-medium"
             @click="processOrderConfirm">
             {{ $t('Place Order') }}
         </button>
-        <button v-else type="button" class="px-6 py-4 w-full mt-4 bg-primary-200 rounded-[10px] text-primary text-base font-semibold flex items-center justify-center gap-2" disabled>
-             {{ $t('Processing') }} <LoadingSpin />
+        <button v-else type="button"
+            class="px-6 py-4 w-full mt-4 bg-primary-200 rounded-[10px] text-primary text-base font-semibold flex items-center justify-center gap-2"
+            disabled>
+            {{ $t('Processing') }}
+            <LoadingSpin />
         </button>
 
         <!-- End Order Confirm Dialog Modal -->
@@ -115,7 +119,7 @@
 <script setup>
 import { ArrowRightIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { CheckCircleIcon } from "@heroicons/vue/24/solid";
-import { onMounted,computed ,ref } from "vue";
+import { onMounted, computed, ref } from "vue";
 import OrderConfirmModal from "../components/OrderConfirmModal.vue";
 import ToastSuccessMessage from "../components/ToastSuccessMessage.vue";
 import LoadingSpin from "./LoadingSpin.vue";
@@ -136,6 +140,7 @@ const toast = useToast();
 
 const hasCoupon = ref(false);
 let isbirthdayCoupon = ref(0);
+let isPointCoupon = ref(0);
 const coupon = ref("");
 
 const props = defineProps({
@@ -180,13 +185,13 @@ const processOrderConfirm = () => {
 
     if (!basketStore.address) {
         toast.error("Please select shipping address", {
-           position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
+            position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
         });
         return;
     }
     if (props.paymentMethod == null) {
         toast.error("Please select payment method", {
-           position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
+            position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
         });
         return;
     }
@@ -195,6 +200,7 @@ const processOrderConfirm = () => {
         isProcessing.value = true;
         axios.post('/place-order', {
             isbirthdayCoupon: isbirthdayCoupon,
+            isPointCoupon: isPointCoupon,
             shop_ids: basketStore.selectedShopIds,
             address_id: basketStore.address.id,
             payment_method: props.paymentMethod,
@@ -221,7 +227,7 @@ const processOrderConfirm = () => {
                 type: "default",
                 hideProgressBar: true,
                 icon: false,
-               position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
+                position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
                 toastClassName: "vue-toastification-alert",
                 timeout: 2000,
             });
@@ -239,7 +245,7 @@ const processOrderConfirm = () => {
         })
     } else {
         toast.error("Please select at least one product", {
-           position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
+            position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
         });
     }
 };
@@ -267,7 +273,7 @@ const openPaymentPopupWindow = (url) => {
 
     if (win.closed) {
         toast.error('Payment Canceled', {
-           position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
+            position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
         });
         router.push({ name: 'home' });
         return
@@ -282,7 +288,7 @@ const openPaymentPopupWindow = (url) => {
                 win.close();
                 basketStore.orderPaymentCancelModal = true
                 toast.error('Payment Canceled', {
-                   position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
+                    position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
                 });
                 router.push({ name: 'home' });
                 return
@@ -298,7 +304,7 @@ const openPaymentPopupWindow = (url) => {
                     win.close();
                     basketStore.orderPaymentCancelModal = true
                     toast.error('Payment Canceled', {
-                       position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
+                        position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
                     });
                     router.push({ name: 'home' });
                 }, 8000);
@@ -338,20 +344,22 @@ const fetchCouponApply = () => {
 
             if (hasCoupon.value) {
                 toast.success(response.data.message, {
-                   position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
+                    position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
                 });
                 basketStore.coupon_code = coupon.value;
-                isbirthdayCoupon = response.data.data.checkout.is_birthday_coupon;
+                isbirthdayCoupon = response.data.data.checkout.is_birthday_coupon ? 1 : 0;
+                isPointCoupon = response.data.data.checkout.is_point_coupon ? 1 : 0;
+                console.log(isPointCoupon, isbirthdayCoupon);
             } else {
                 toast.error(response.data.message, {
-                   position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
+                    position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
                 });
                 basketStore.coupon_code = '';
             }
         })
         .catch((error) => {
             toast.error(error.response.data.message, {
-               position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
+                position: master.langDirection === 'rtl' ? "bottom-right" : "bottom-left",
             });
         });
 };

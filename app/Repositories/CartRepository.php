@@ -250,15 +250,25 @@ class CartRepository extends Repository
             ];
 
             // get coupon discount
+            $birthdaydiscount = 0;
+            $pointRedeemDiscount = 0;
             $getDiscount = CouponRepository::getCouponDiscount($array);
             $couponDiscount = $getDiscount['discount_amount'];
+            
             if (!$couponDiscount) {
-                $birthdaydiscount = 0;
                 //birthday coupon discount
+                $birthdaydiscount = 0;
                 $getbirthdayDiscount = CouponRepository::getBirthdayCouponDiscount($array);
-                if ($getbirthdayDiscount) {
+                if ($getbirthdayDiscount['coupon'] != null) {
                     $couponDiscount = $getbirthdayDiscount['discount_amount'];
                     $birthdaydiscount = 1;
+                }
+                // point redeem discount
+                $pointRedeemDiscount = 0;
+                $getPointRedeemDiscount = CouponRepository::getPointredeemCouponDiscount($array);
+                if ($getPointRedeemDiscount['coupon'] != null) {
+                    $couponDiscount += $getPointRedeemDiscount['discount_amount'];
+                    $pointRedeemDiscount = 1;
                 }
             }
             $payableAmount = $totalAmount + $deliveryCharge - $couponDiscount;
@@ -282,6 +292,7 @@ class CartRepository extends Repository
             'order_tax_amount' => (float) round($totalOrderTaxAmount, 2),
             'payable_amount' => (float) round($payableAmount, 2),
             'is_birthday_coupon' => $birthdaydiscount,
+            'is_point_coupon' => $pointRedeemDiscount,
             // 'product_tax_amount' => (float) round($taxAmount, 2),
         ];
     }

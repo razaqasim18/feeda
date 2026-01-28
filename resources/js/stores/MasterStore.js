@@ -6,6 +6,8 @@ export const useMaster = defineStore("masterStore", {
         langDirection: "ltr",
         defaultLocale: "en",
         logo: null,
+        point: 0,
+        point_valid_day: 0,
         currency: {
             symbol: "$",
             position: "prefix",
@@ -105,6 +107,8 @@ export const useMaster = defineStore("masterStore", {
                 this.footerLogo = data.web_footer_logo;
                 this.footerQr = data.footer_qr;
                 this.logo = data.web_logo;
+                this.point = data.point;
+                this.point_valid_day = data.point_valid_day;
                 this.socialLinks = data.social_links;
                 this.themeColors = data.theme_colors;
                 this.pusher_app_key = data.pusher_app_key;
@@ -119,8 +123,7 @@ export const useMaster = defineStore("masterStore", {
                 this.phoneRequired = data.phone_required;
                 this.phoneMinLength = data.phone_min_length;
                 this.phoneMaxLength = data.phone_max_length;
-
-
+                
                 if (this.defaultLocale != data.app_locale) {
                     this.locale = data.app_locale;
                     this.defaultLocale = data.app_locale;

@@ -15,6 +15,7 @@ use App\Models\BirthdayCoupon;
 use App\Models\GeneraleSetting;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\PointRedeemCoupon;
 use App\Models\Shop;
 use App\Services\NotificationServices;
 use Carbon\Carbon;
@@ -51,7 +52,6 @@ class OrderRepository extends Repository
         $shopProducts = $carts->groupBy('shop_id');
 
         foreach ($shopProducts as $shopId => $cartProducts) {
-
             $shop = Shop::find($shopId);
             $getCartAmounts = self::getCartWiseAmounts($shop, collect($cartProducts), $request);
             $order = self::createNewOrder($request, $shop, $paymentMethod, $getCartAmounts);
@@ -60,7 +60,6 @@ class OrderRepository extends Repository
             $payment->orders()->attach($order->id);
 
             foreach ($cartProducts as $cart) {
-
                 $cart->product->decrement('quantity', $cart->quantity);
 
                 $product = $cart->product;
@@ -90,7 +89,7 @@ class OrderRepository extends Repository
                 }
 
                 $sizeproduct = $product->sizes()?->where('id', $cart->size)->first();
-                if($sizeproduct){
+                if ($sizeproduct) {
                     $sizeproduct?->pivot?->decrement('quantity', $cart->quantity);
                 }
                 $sizePrice = $sizeproduct?->pivot?->price ?? 0;
@@ -110,7 +109,7 @@ class OrderRepository extends Repository
                 $priceTaxAmount = 0;
                 foreach ($product->vatTaxes ?? [] as $tax) {
                     if ($tax->percentage > 0) {
-                        $priceTaxAmount += ($price * ($tax->percentage / 100));
+                        $priceTaxAmount += $price * ($tax->percentage / 100);
                     }
                 }
 
@@ -148,10 +147,10 @@ class OrderRepository extends Repository
 
     private static function createNewOrder($request, $shop, $paymentMethod, $getCartAmounts)
     {
-        $area = explode("-", $request->area) ?? 0;
+        $area = explode('-', $request->area) ?? 0;
 
         $areaname = isset($area[0]) ? $area[0] : null;
-        $areaCharge = isset($area[1]) ? (float)$area[1] : 0;
+        $areaCharge = isset($area[1]) ? (float) $area[1] : 0;
         // dd($areaname);
         $lastOrderId = self::query()->max('id');
         $order = self::create([
@@ -159,11 +158,15 @@ class OrderRepository extends Repository
             'order_code' => str_pad($lastOrderId + 1, 6, '0', STR_PAD_LEFT),
             'prefix' => $shop->prefix ?? 'RC',
             'customer_id' => auth()->user()->customer->id,
-            'coupon_id' => $request->isbirthdayCoupon ? NULL : $getCartAmounts['coupon'],
-            'birthday_coupon_id' => $request->isbirthdayCoupon ? $getCartAmounts['coupon'] : NULL,
+
+            'coupon_id' => $request->isbirthdayCoupon == 0 && $request->isPointCoupon == 0 ? null : $getCartAmounts['coupon'],
+            'birthday_coupon_id' => $request->isbirthdayCoupon ? $getCartAmounts['coupon'] : null,
             'is_birthday_coupon' => $request->isbirthdayCoupon ? 1 : 0,
+            'point_coupon_id' => $request->isPointCoupon ? $getCartAmounts['coupon'] : null,
+            'is_point_coupon' => $request->isPointCoupon ? 1 : 0,
+
             'delivery_charge' => $getCartAmounts['deliveryCharge'] + $areaCharge,
-            'payable_amount' => $getCartAmounts['payableAmount'],
+            'payable_amount' => $getCartAmounts['payableAmount'] + $areaCharge,
             'total_amount' => $getCartAmounts['totalAmount'] + $areaCharge,
             'tax_amount' => $getCartAmounts['totalTaxAmount'],
             'coupon_discount' => $getCartAmounts['discount'],
@@ -189,7 +192,6 @@ class OrderRepository extends Repository
         $deliveryCharge = getDeliveryCharge($orderQty);
 
         foreach ($carts as $cart) {
-
             $product = $cart->product;
             $price = $product->discount_price > 0 ? $product->discount_price : $product->price;
 
@@ -222,7 +224,7 @@ class OrderRepository extends Repository
             }
             $price += $taxAmount;
 
-            $totalAmount += ($price * $cart->quantity);
+            $totalAmount += $price * $cart->quantity;
         }
 
         // order vat taxes
@@ -233,9 +235,7 @@ class OrderRepository extends Repository
         }
 
         // get coupon discount
-        if (!$request->isbirthdayCoupon) {
-            $couponDiscount = self::getCouponDiscount($totalAmount, $shop->id, $request->coupon_code);
-        } else {
+        if ($request->isbirthdayCoupon) {
             $couponDiscount = self::getBirthdayCouponDiscount($totalAmount, $shop->id, $request->coupon_code);
             if ($couponDiscount) {
                 $coupon = BirthdayCoupon::where('code', $request->coupon_code)
@@ -250,6 +250,24 @@ class OrderRepository extends Repository
                     $coupon->save();
                 }
             }
+        } elseif ($request->isPointCoupon) {
+            
+            $couponDiscount = self::getPointCouponDiscount($totalAmount, $shop->id, $request->coupon_code);
+            if ($couponDiscount) {
+                $coupon = PointRedeemCoupon::where('code', $request->coupon_code)
+                    ->where('is_active', 1)
+                    ->where('is_used', 0)
+                    ->whereDate('started_at', '<=', Carbon::now()->toDateString())
+                    ->whereDate('expired_at', '>=', Carbon::now()->toDateString())
+                    ->first();
+
+                if ($coupon) {
+                    $coupon->is_used = 1;
+                    $coupon->save();
+                }
+            }
+        } else {
+            $couponDiscount = self::getCouponDiscount($totalAmount, $shop->id, $request->coupon_code);
         }
 
         // check coupon discount amount
@@ -259,8 +277,16 @@ class OrderRepository extends Repository
         }
 
         // calculate payable amount
-        $payableAmount = ($totalAmount + $deliveryCharge + $totalTaxAmount) - $discount;
+        $payableAmount = $totalAmount + $deliveryCharge + $totalTaxAmount - $discount;
 
+        // dd([
+        //     'totalAmount' => $totalAmount,
+        //     'totalTaxAmount' => $totalTaxAmount,
+        //     'payableAmount' => $payableAmount,
+        //     'discount' => $discount,
+        //     'deliveryCharge' => $deliveryCharge,
+        //     'coupon' => $coupon?->id,
+        // ]);
         // return array
         return [
             'totalAmount' => $totalAmount,
@@ -303,7 +329,6 @@ class OrderRepository extends Repository
         ]);
 
         foreach ($order->products as $product) {
-
             $qty = $product->pivot->quantity;
 
             $product->decrement('quantity', $qty);
@@ -362,10 +387,12 @@ class OrderRepository extends Repository
             $shop = Shop::find($shopId);
             $coupon = $shop->coupons()->where('code', $couponCode)->Active()->isValid()->first();
 
-            if (! $coupon) {
-                $coupon = AdminCoupon::where('shop_id', $shopId)->whereHas('coupon', function ($query) use ($couponCode) {
-                    $query->where('code', $couponCode)->Active()->isValid();
-                })->first()?->coupon;
+            if (!$coupon) {
+                $coupon = AdminCoupon::where('shop_id', $shopId)
+                    ->whereHas('coupon', function ($query) use ($couponCode) {
+                        $query->where('code', $couponCode)->Active()->isValid();
+                    })
+                    ->first()?->coupon;
             }
 
             if ($coupon) {
@@ -375,11 +402,9 @@ class OrderRepository extends Repository
                 $totalDiscountAmount += $discount['discount_amount'];
             }
         } else {
-
             $collectedCoupons = CouponRepository::getCollectedCoupons($shopId);
 
             foreach ($collectedCoupons as $collectedCoupon) {
-
                 $discount = self::getCouponDiscountAmount($collectedCoupon, $totalAmount);
 
                 $totalOrderAmount += $discount['total_amount'];
@@ -428,7 +453,6 @@ class OrderRepository extends Repository
             'coupon' => $coupon,
         ];
     }
-
     /**
      * Get coupon discount amount
      *
@@ -472,6 +496,52 @@ class OrderRepository extends Repository
         ];
     }
 
+    public static function getPointCouponDiscount($totalAmount, $shopId, $couponCode = null)
+    {
+        $totalOrderAmount = 0;
+        $totalDiscountAmount = 0;
+        $coupon = null;
+
+        if ($couponCode) {
+            $shop = Shop::find($shopId);
+            $coupon = PointRedeemCoupon::where('code', $couponCode)
+                ->where('is_active', 1)
+                ->where('is_used', 0)
+                ->whereDate('started_at', '<=', Carbon::now()->toDateString())
+                ->whereDate('expired_at', '>=', Carbon::now()->toDateString())
+                ->first();
+
+            if ($coupon) {
+                $discount = self::getPointCouponDiscountAmount($coupon, $totalAmount);
+
+                $totalOrderAmount += $discount['total_amount'];
+                $totalDiscountAmount += $discount['discount_amount'];
+            }
+        }
+
+        return [
+            'total_order_amount' => $totalOrderAmount,
+            'total_discount_amount' => $totalDiscountAmount,
+            'coupon' => $coupon,
+        ];
+    }
+
+    public static function getPointCouponDiscountAmount($coupon, $totalAmount)
+    {
+        $amount = $coupon->type == DiscountType::PERCENTAGE->value ? ($totalAmount * $coupon->discount) / 100 : $coupon->discount;
+
+        $couponDiscount = 0;
+        $couponDiscount = $amount;
+        if ($coupon->max_discount_amount && $coupon->max_discount_amount < $amount) {
+            $couponDiscount = $coupon->max_discount_amount;
+        }
+
+        return [
+            'total_amount' => $totalAmount,
+            'discount_amount' => (float) round($couponDiscount ?? 0, 2),
+        ];
+    }
+
     /**
      * Order status update from rider
      */
@@ -482,7 +552,7 @@ class OrderRepository extends Repository
         }
 
         $order->update([
-            'order_status' => ($orderStatus == 'deliveredAndPaid') ? OrderStatus::DELIVERED->value : $orderStatus,
+            'order_status' => $orderStatus == 'deliveredAndPaid' ? OrderStatus::DELIVERED->value : $orderStatus,
         ]);
 
         if ($orderStatus == OrderStatus::PICKUP->value) {
@@ -499,8 +569,7 @@ class OrderRepository extends Repository
             $isDelivery = true;
         }
 
-        if (($orderStatus == 'deliveredAndPaid') || $isDelivery) {
-
+        if ($orderStatus == 'deliveredAndPaid' || $isDelivery) {
             $driverOrder->update(['is_completed' => true]);
 
             if ($paymentMethod == PaymentMethod::CASH->value) {
@@ -518,9 +587,8 @@ class OrderRepository extends Repository
             $commission = 0;
 
             if ($generaleSetting?->commission_charge != 'monthly') {
-
                 if ($generaleSetting?->commission_type != 'fixed') {
-                    $commission = $order->total_amount * $generaleSetting->commission / 100;
+                    $commission = ($order->total_amount * $generaleSetting->commission) / 100;
                 } else {
                     $commission = $generaleSetting->commission ?? 0;
                 }
@@ -555,7 +623,6 @@ class OrderRepository extends Repository
         $devices = $user?->devices;
 
         if (count($devices) > 0) {
-
             $deviceKeys = $devices->pluck('key')->toArray();
             try {
                 NotificationServices::sendNotification($message, $deviceKeys, $title);
@@ -563,14 +630,16 @@ class OrderRepository extends Repository
             }
         }
 
-        NotificationRepository::storeByRequest((object) [
-            'title' => $title,
-            'content' => $message,
-            'user_id' => $user?->id,
-            'url' => $order->id,
-            'type' => 'order',
-            'icon' => null,
-            'is_read' => false,
-        ]);
+        NotificationRepository::storeByRequest(
+            (object) [
+                'title' => $title,
+                'content' => $message,
+                'user_id' => $user?->id,
+                'url' => $order->id,
+                'type' => 'order',
+                'icon' => null,
+                'is_read' => false,
+            ],
+        );
     }
 }

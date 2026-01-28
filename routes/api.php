@@ -169,6 +169,10 @@ Route::middleware(['auth:sanctum', 'role:customer'])->group(function () {
         Route::get('/get-collected-vouchers', 'collectedVouchers');
         Route::post('/apply-voucher', 'applyVoucher')->name('voucher.apply');
         Route::post('/coupons/apply', 'getDiscount');
+
+        Route::get('/point-redeem-list', 'pointRedeemCoupon')->name('point.redeem.list');
+        Route::get('/point-redeem-user-list', 'userPointRedeemCoupon')->name('point.redeem.user.list');
+        Route::post('/point-redeem', 'redeemPoints')->name('point.redeem');
     });
 
     // address route
@@ -195,6 +199,7 @@ Route::middleware(['auth:sanctum', 'role:customer'])->group(function () {
         Route::post('/support-ticket', 'store');
         Route::get('/support-ticket/show', 'show');
     });
+    
 
     // support ticket message
     Route::controller(SupportTicketMessageController::class)->group(function () {
