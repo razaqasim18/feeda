@@ -26,25 +26,28 @@
             </div>
 
             <div class="hidden lg:block xl:w-28">
-                <div class="text-sm font-normal px-1.5 py-0.5 rounded-[10px] inline-block"
-                    :class="props.coupon.is_used ? 'bg-primary-300 text-white' : 'bg-primary text-white'">
-                    {{ props.coupon.is_used ? 'Is Used' : 'Is Valid' }}
+                <div class="text-sm font-normal px-1.5 py-0.5 rounded-[10px] inline-block" :class="props.coupon.is_used == 1 ||
+                    new Date(props.coupon.expired_at) <= new Date()
+                    ? 'bg-primary-300 text-white'
+                    : 'bg-primary text-white'">
+                    {{ props.coupon.is_used == 1 ||
+                        new Date(props.coupon.expired_at) <= new Date() ? 'Is Used' : 'Is Valid' }} </div>
+
                 </div>
-            </div>
 
 
-            <div class="hidden lg:block xl:w-28">
-                <span class="text-slate-500">
-                    {{ $t('Validated till') }}:
-                </span>
-                <div class="text-sm font-normal px-1.5 py-0.5 rounded-[10px] inline-block">
-                    {{ props.coupon.expired_at.split('T')[0] }}
+                <div class="hidden lg:block xl:w-28">
+                    <span class="text-slate-500">
+                        {{ $t('Validated till') }}:
+                    </span>
+                    <div class="text-sm font-normal px-1.5 py-0.5 rounded-[10px] inline-block">
+                        {{ props.coupon.expired_at.split('T')[0] }}
+                    </div>
                 </div>
+
+
             </div>
-
-
         </div>
-    </div>
 </template>
 
 <script setup>

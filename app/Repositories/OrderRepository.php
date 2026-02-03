@@ -16,6 +16,7 @@ use App\Models\GeneraleSetting;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PointRedeemCoupon;
+use App\Models\PointTransaction;
 use App\Models\Shop;
 use App\Services\NotificationServices;
 use Carbon\Carbon;
@@ -131,6 +132,22 @@ class OrderRepository extends Repository
                 } catch (\Throwable $th) {
                 }
             }
+
+            //code for point reedme
+            $generalSetting = generaleSetting('setting');
+            if ($generalSetting && $generalSetting->point > 0) {
+                $pointsEarned = $totalPayableAmount / $generalSetting->point;
+                $pointsEarned = floor($pointsEarned); // recommended
+                $user->points += $pointsEarned;
+                $user->save();
+            }
+
+            PointTransaction::create([
+                'user_id' => $user->id,
+                'point' => floor($pointsEarned),
+                'is_credit' => '1',
+                'description' => 'Points earned from order #' . $order->prefix . $order->order_code,
+            ]);
         }
 
         $payment->update([
@@ -251,7 +268,6 @@ class OrderRepository extends Repository
                 }
             }
         } elseif ($request->isPointCoupon) {
-            
             $couponDiscount = self::getPointCouponDiscount($totalAmount, $shop->id, $request->coupon_code);
             if ($couponDiscount) {
                 $coupon = PointRedeemCoupon::where('code', $request->coupon_code)

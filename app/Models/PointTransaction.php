@@ -12,6 +12,7 @@ class PointTransaction extends Model
         'user_id',
         'point',
         'type',
+        'is_credit',
         'description',
     ];
 }
