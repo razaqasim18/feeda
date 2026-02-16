@@ -138,7 +138,8 @@ onMounted(() => {
     authStore.fetchPointRedeemlist();
     authStore.fetchPointRedeemcouponList(
         currentPage.value,
-        perPage.value
+        perPage.value,
+        0
     );
 });
 

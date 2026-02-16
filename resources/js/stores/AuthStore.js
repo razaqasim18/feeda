@@ -91,11 +91,12 @@ export const useAuth = defineStore("authStore", {
                 });
         },
 
-        fetchPointRedeemcouponList(page = 1, perPage = 10) {
+        fetchPointRedeemcouponList(page = 1, perPage = 10, checkout = 0) {
             axios.get("/point-redeem-user-list", {
                 params: {
                     page: page,
                     per_page: perPage,
+                    checkout: checkout,
                 },
                 headers: {
                     userid: this.user.id,
@@ -104,8 +105,12 @@ export const useAuth = defineStore("authStore", {
             })
                 .then((response) => {
                     // Laravel paginator response
-                    this.coupons = response.data.data.pointcoupons.data;
-                    this.totalItems = response.data.data.pointcoupons.total;
+                    if (checkout == 0) {
+                        this.coupons = response.data.data.pointcoupons.data;
+                        this.totalItems = response.data.data.pointcoupons.total;
+                    } else {
+                        this.coupons = response.data.data.pointcoupons;
+                    }
                 })
                 .catch((error) => {
                     console.error(error);

@@ -86,10 +86,14 @@ class CouponController extends Controller
 
         $status = $couponDiscount['discount_amount'] > 0 ? 200 : 201;
 
-        return $this->json($message, [
-            'total_order_amount' => (float) number_format($couponDiscount['total_amount'], 2, '.', ''),
-            'total_discount_amount' => (float) number_format($couponDiscount['discount_amount'], 2, '.', ''),
-        ], $status);
+        return $this->json(
+            $message,
+            [
+                'total_order_amount' => (float) number_format($couponDiscount['total_amount'], 2, '.', ''),
+                'total_discount_amount' => (float) number_format($couponDiscount['discount_amount'], 2, '.', ''),
+            ],
+            $status,
+        );
     }
 
     /**
@@ -103,15 +107,19 @@ class CouponController extends Controller
 
         $status = $couponDiscount['discount_amount'] > 0 ? 200 : 201;
 
-        return $this->json($message, [
-            'total_order_amount' => (float) round($couponDiscount['total_amount'], 2),
-            'total_discount_amount' => (float) round($couponDiscount['discount_amount'], 2),
-        ], $status);
+        return $this->json(
+            $message,
+            [
+                'total_order_amount' => (float) round($couponDiscount['total_amount'], 2),
+                'total_discount_amount' => (float) round($couponDiscount['discount_amount'], 2),
+            ],
+            $status,
+        );
     }
 
     public function pointRedeemCoupon(Request $request)
     {
-       $userPoint = User::find($request->header('userid'))?->points;
+        $userPoint = User::find($request->header('userid'))?->points;
         // get collected vouchers from repository
         $pointredeem = Point_redeem::all();
         return $this->json('available point redeem list', [
@@ -119,7 +127,6 @@ class CouponController extends Controller
             'userpoint' => $userPoint,
         ]);
     }
-
 
     public function redeemPoints(Request $request)
     {
@@ -147,14 +154,14 @@ class CouponController extends Controller
 
             // Point transaction
             PointTransaction::create([
-                'user_id'   => $user->id,
-                'point'     => $pointRedeem->points,
+                'user_id' => $user->id,
+                'point' => $pointRedeem->points,
                 'is_credit' => 0,
                 'description' => "Redeemed coupon of {$pointRedeem->amount} for {$pointRedeem->points} points",
             ]);
 
             // Coupon dates
-            $startDateTime   = now();
+            $startDateTime = now();
             $expiredDateTime = now()->addDays(4);
 
             // Unique 8-digit code
@@ -171,15 +178,15 @@ class CouponController extends Controller
 
             // Create coupon
             PointRedeemCoupon::create([
-                'user_id'    => $user->id,
-                'code'       => $code,
-                'discount'   => $pointRedeem->amount,
-                'type'       => 'amount',
+                'user_id' => $user->id,
+                'code' => $code,
+                'discount' => $pointRedeem->amount,
+                'type' => 'amount',
                 'started_at' => $startDateTime,
                 'expired_at' => $expiredDateTime,
-                'shop_id'    => $shop->id,
-                'is_active'  => true,
-                'is_used'    => 0,
+                'shop_id' => $shop->id,
+                'is_active' => true,
+                'is_used' => 0,
             ]);
 
             DB::commit();
@@ -189,24 +196,28 @@ class CouponController extends Controller
                 'coupon_code' => $code,
                 'expires_at' => $expiredDateTime,
             ]);
-
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            return $this->json('Failed to redeem points', [
-                'error' => $e->getMessage(),
-            ], 500);
+            return $this->json(
+                'Failed to redeem points',
+                [
+                    'error' => $e->getMessage(),
+                ],
+                500,
+            );
         }
     }
 
     public function userPointRedeemCoupon(Request $request)
     {
-        $perPage = $request->get('per_page', 10); // default 10
+        if ($request->get('checkout') == 1) {
+            $coupons = PointRedeemCoupon::where('user_id', $request->header('userid'))->where('is_active', '1')->where('is_used', '0')->orderBy('created_at', 'desc')->get();
+        } else {
+            $perPage = $request->get('per_page', 10); // default 10
 
-        $coupons = PointRedeemCoupon::where('user_id', $request->header('userid'))
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
-
+            $coupons = PointRedeemCoupon::where('user_id', $request->header('userid'))->where('is_active', '1')->where('is_used', '0')->orderBy('created_at', 'desc')->paginate($perPage);
+        }
         return $this->json('Points redeemed coupon list', [
             'pointcoupons' => $coupons,
         ]);

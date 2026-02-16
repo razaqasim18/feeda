@@ -69,6 +69,104 @@
                 </div>
             </div>
 
+
+            <!-- reedeam points -->
+            <!-- grid grid-cols-1 xl:grid-cols-3 -->
+            <div class="my-3 gap-8">
+
+                <div class="flex gap-3 my-4">
+                    <button @click="activeTab = 'redeem'" :class="activeTab === 'redeem'
+                        ? 'bg-primary text-white'
+                        : 'bg-white text-primary border'" class="w-full px-4 py-2 rounded border transition">
+                        Redeem
+                    </button>
+
+                    <button @click="activeTab = 'reward'" :class="activeTab === 'reward'
+                        ? 'bg-primary text-white'
+                        : 'bg-white text-primary border'" class="w-full px-4 py-2 rounded border transition">
+                        Your Reward
+                    </button>
+                </div>
+
+                <!-- REDEEM LIST -->
+                <div v-if="activeTab === 'redeem'" class="space-y-4">
+                    <div v-for="pointreedem in authStore.pointreedems" :key="pointreedem.id"
+                        class="p-4 flex rounded-lg border bg-white relative">
+
+                        <div class="w-full lg:w-[100%] flex flex-col overflow-hidden">
+                            <div class="flex gap-1 justify-between">
+                                <div class="text-sm sm:text-base font-normal shrink-0">
+                                    <span class="text-slate-500 text-sm">
+                                        {{ $t('Redeem Reward') }}:
+                                    </span>
+
+                                    <h4 class="text-primary-500 text-md">
+                                        {{ pointreedem.points }} Points -
+                                        {{ master.showCurrency(pointreedem.amount) }} off
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative mt-2">
+                            <button class="top-5 right-3 px-3 py-2 border border-primary rounded
+                    transition-all disabled:opacity-50 disabled:cursor-not-allowed
+                    text-primary hover:text-white hover:bg-primary" :disabled="redeemLoading === pointreedem.id ||
+                        Number(authStore.userpoint) < Number(pointreedem.points)"
+                                @click="redeemPoints(pointreedem.id)">
+
+                                <span v-if="redeemLoading === pointreedem.id">
+                                    {{ $t('Processing') }}
+                                </span>
+
+                                <span v-else-if="Number(authStore.userpoint) < Number(pointreedem.points)">
+                                    {{ $t('Not enough coins') }}
+                                </span>
+
+                                <span v-else>
+                                    {{ $t('Redeem') }}
+                                </span>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div v-if="authStore.pointreedems.length === 0">
+                        {{ $t('No Package available') }}
+                    </div>
+                </div>
+
+                <!-- COUPONS LIST -->
+                <div v-if="activeTab === 'reward'" class="space-y-4">
+                    <div v-for="coupon in authStore.coupons" :key="coupon.id">
+                        <div
+                            class=" bg-white rounded-lg border border-slate-100 flex gap-2 lg:gap-4 flex-col lg:flex-row items-center justify-between">
+                            <div>
+                                <span class="text-slate-500 text-sm">
+                                    {{ $t('Coupon Code') }}:
+                                </span>
+                                <span class="text-primary-500 text-lg">
+                                    {{ coupon.code }}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="text-slate-500">
+                                    {{ $t('Validated till') }}:
+                                </span>
+                                <div class="text-sm font-normal px-1.5 py-0.5 rounded-[10px] inline-block">
+                                    {{ coupon.expired_at.split('T')[0] }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="authStore.coupons.length === 0">
+                        {{ $t('No Coupons Found') }}
+                    </div>
+                </div>
+
+            </div>
+
             <!-- Have a coupon -->
             <div class="p-4 mt-6 bg-slate-100 rounded-xl">
                 <div class="text-black text-base font-normal leading-normal">
@@ -123,11 +221,13 @@ import { onMounted, computed, ref } from "vue";
 import OrderConfirmModal from "../components/OrderConfirmModal.vue";
 import ToastSuccessMessage from "../components/ToastSuccessMessage.vue";
 import LoadingSpin from "./LoadingSpin.vue";
+import PointCouponItem from '../components/PointCouponItem.vue';
 
 import { useToast } from "vue-toastification";
 import { useAuth } from "../stores/AuthStore";
 import { useBasketStore } from "../stores/BasketStore";
 import { useMaster } from "../stores/MasterStore";
+
 
 import { useRouter } from "vue-router";
 const router = new useRouter();
@@ -136,12 +236,15 @@ const basketStore = useBasketStore();
 const master = useMaster();
 const authStore = useAuth();
 
+
 const toast = useToast();
 
 const hasCoupon = ref(false);
 let isbirthdayCoupon = ref(0);
 let isPointCoupon = ref(0);
 const coupon = ref("");
+const activeTab = ref('redeem') // default tab
+const redeemLoading = ref(null);
 
 const props = defineProps({
     note: String,
@@ -157,7 +260,28 @@ const areacharges = computed(() => {
 
 onMounted(() => {
     coupon.value = basketStore.coupon_code;
+    authStore.fetchPointRedeemlist();
+    authStore.fetchPointRedeemcouponList(1, 10, 1);
+    activeTab.value = 'reward'; // ✅ correct
 });
+
+
+const redeemPoints = async (id) => {
+    try {
+        redeemLoading.value = id;
+
+        await authStore.redeemPoints(id);
+
+        // refresh both lists correctly
+        await authStore.fetchPointRedeemlist();
+        await authStore.fetchPointRedeemcouponList(1, 10, 1);
+
+    } catch (error) {
+        console.error(error);
+    } finally {
+        redeemLoading.value = null;
+    }
+};
 
 const ApplyCoupon = () => {
     if (coupon.value.length > 0) {
