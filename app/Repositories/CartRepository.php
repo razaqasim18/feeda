@@ -168,6 +168,7 @@ class CartRepository extends Repository
         $birthdaydiscount = 0;
         $shopWiseTotalAmount = [];
         $totalOrderTaxAmount = 0;
+        $pointRedeemDiscount = 0;
 
         if (! $carts->isEmpty()) {
 

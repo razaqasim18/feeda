@@ -95,6 +95,7 @@ export const useBasketStore = defineStore("basketStore", {
 
                         this.total = response.data.data.total;
                         this.products = response.data.data.cart_items;
+                        this.fetchCheckoutProducts();
                         toast(content, {
                             type: "default",
                             hideProgressBar: true,
@@ -180,7 +181,7 @@ export const useBasketStore = defineStore("basketStore", {
                     {
                         product_id: product.id,
                         color_id: product.color?.id ?? null,
-                         size_id: product.size?.id ?? null
+                        size_id: product.size?.id ?? null
                     },
                     {
                         headers: {
@@ -277,7 +278,7 @@ export const useBasketStore = defineStore("basketStore", {
                     {
                         product_id: product.id,
                         color_id: product.color?.id ?? null,
-                         size_id: product.size?.id ?? null
+                        size_id: product.size?.id ?? null
                     },
                     {
                         headers: {
