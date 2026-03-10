@@ -21,6 +21,10 @@ class Product extends Model
 
     protected $appends = ['thumbnail'];
 
+    public function scopeNewest($query)
+    {
+        return $query->orderByDesc('id');
+    }
     /**
      * Retrieve the shop that this model belongs to.
      *

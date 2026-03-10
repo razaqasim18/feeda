@@ -27,7 +27,7 @@ class ProductController extends Controller
     {
         $page = $request->page;
         $perPage = $request->per_page;
-        $skip = ($page * $perPage) - $perPage;
+        $skip = $page * $perPage - $perPage;
 
         $search = $request->search;
         $shopID = $request->shop_id;
@@ -50,9 +50,11 @@ class ProductController extends Controller
 
         // get data for
         $rootShop = $shop ?? generaleSetting('rootShop');
-        $productQuery = ProductRepository::query()->when($shop, function ($query) use ($shop) {
-            return $query->where('shop_id', $shop->id);
-        })->isActive();
+        $productQuery = ProductRepository::query()
+            ->when($shop, function ($query) use ($shop) {
+                return $query->where('shop_id', $shop->id);
+            })
+            ->isActive();
 
         $productMinPrice = $productQuery->min('price');
         $productMaxPrice = $productQuery->max('price');
@@ -66,58 +68,75 @@ class ProductController extends Controller
             ->isActive()
             ->when($shop, function ($query) use ($shop) {
                 return $query->where('shop_id', $shop->id);
-            })->when($shopID && !$shop, function ($query) use ($shopID) {
+            })
+            ->when($shopID && !$shop, function ($query) use ($shopID) {
                 return $query->where('shop_id', $shopID);
             })
             ->when($search, function ($query) use ($search) {
                 return $query->where(function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%')
+                    $query
+                        ->where('name', 'like', '%' . $search . '%')
                         ->orWhere('short_description', 'like', '%' . $search . '%')
                         ->orWhere('code', 'like', '%' . $search . '%');
                 });
-            })->when($brandID, function ($query) use ($brandID) {
+            })
+            ->when($brandID, function ($query) use ($brandID) {
                 return $query->where('brand_id', $brandID);
-            })->when($colorID, function ($query) use ($colorID) {
+            })
+            ->when($colorID, function ($query) use ($colorID) {
                 return $query->whereHas('colors', function ($query) use ($colorID) {
                     return $query->where('id', $colorID);
                 });
-            })->when($sizeID, function ($query) use ($sizeID) {
+            })
+            ->when($sizeID, function ($query) use ($sizeID) {
                 return $query->whereHas('sizes', function ($query) use ($sizeID) {
                     return $query->where('id', $sizeID);
                 });
-            })->when($categoryID, function ($query) use ($categoryID) {
+            })
+            ->when($categoryID, function ($query) use ($categoryID) {
                 return $query->whereHas('categories', function ($query) use ($categoryID) {
                     return $query->where('id', $categoryID);
                 });
-            })->when($subCategoryID, function ($query) use ($subCategoryID) {
+            })
+            ->when($subCategoryID, function ($query) use ($subCategoryID) {
                 $query->whereHas('subcategories', function ($query) use ($subCategoryID) {
                     return $query->where('id', $subCategoryID);
                 });
-            })->when($rating, function ($query) use ($rating) {
+            })
+            ->when($rating, function ($query) use ($rating) {
                 $ratingValue = floatval($rating);
                 $upperBound = $ratingValue + 1;
 
                 return $query->havingRaw('average_rating >= ' . $rating . ' AND average_rating < ' . $upperBound);
-            })->when($sortType == 'top_selling', function ($query) {
-                return $query->orderByDesc('orders_count');
-            })->when($sortType == 'popular_product', function ($query) {
-                return $query->orderByDesc('orders_count')->orderByDesc('average_rating');
-            })->when($sortType == 'newest' || $sortType == 'just_for_you', function ($query) {
+            })
+            ->when($sortType == 'top_selling', function ($query) {
+                return $query->orderByDesc('orders_count')->orderByDesc("id");
+            })
+            ->when($sortType == 'popular_product', function ($query) {
+                return $query->orderByDesc('orders_count')->orderByDesc('average_rating')->orderByDesc("id");
+            })
+            ->when($sortType == 'newest' || $sortType == 'just_for_you', function ($query) {
                 return $query->orderBy('id', 'desc');
-            })->when($minPrice, function ($query) use ($minPrice) {
+            })
+            ->when($minPrice, function ($query) use ($minPrice) {
                 return $query->whereRaw('IF(discount_price > 0, discount_price, price) >= ?', [$minPrice]);
-            })->when($maxPrice, function ($query) use ($maxPrice) {
+            })
+            ->when($maxPrice, function ($query) use ($maxPrice) {
                 return $query->whereRaw('IF(discount_price > 0, discount_price, price) <= ?', [$maxPrice]);
-            })->when($sortType == 'high_to_low', function ($query) {
-                return $query->orderByRaw('IF(discount_price > 0, discount_price, price) DESC')->orderBy('id', 'DESC');
-            })->when($sortType == 'low_to_high', function ($query) {
-                return $query->orderByRaw('IF(discount_price > 0, discount_price, price) ASC')->orderBy('id', 'DESC');
-            });
+            })
+            ->when($sortType == 'high_to_low', function ($query) {
+                return $query->orderByRaw('IF(discount_price > 0, discount_price, price) DESC')->orderByDesc("id");
+            })
+            ->when($sortType == 'low_to_high', function ($query) {
+                return $query->orderByRaw('IF(discount_price > 0, discount_price, price) ASC')->orderByDesc("id");
+            })->newest();
 
         $total = $products->count();
-        $products = $products->when($perPage && $page, function ($query) use ($perPage, $skip) {
-            return $query->skip($skip)->take($perPage);
-        })->get();
+        $products = $products
+            ->when($perPage && $page, function ($query) use ($perPage, $skip) {
+                return $query->skip($skip)->take($perPage);
+            })
+            ->get();
 
         return $this->json('products', [
             'total' => $total,
@@ -132,41 +151,34 @@ class ProductController extends Controller
         ]);
     }
 
-
-
-
     public function brand(Request $request)
     {
         $brandId = $request->category_id;
 
         if (!$brandId) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Brand ID parameter is required'
-            ], 400);
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Brand ID parameter is required',
+                ],
+                400,
+            );
         }
 
         $products = ProductRepository::getProductsByBrand($brandId);
-
-
-
 
         return $this->json('products', [
             'total' => $products->count(),
             'products' => ProductResource::collection($products),
             'filters' => [
-                'sizes' =>  [],
-                'colors' =>  [],
-                'brands' =>  [],
+                'sizes' => [],
+                'colors' => [],
+                'brands' => [],
                 'min_price' => 0,
                 'max_price' => 100,
             ],
         ]);
     }
-
-
-
-
 
     /**
      * Show the product details.
@@ -184,12 +196,15 @@ class ProductController extends Controller
 
         ProductRepository::recentView($product);
 
-        $relatedProducts = ProductRepository::query()->whereHas('categories', function ($query) use ($product) {
-            $query->whereIn('categories.id', $product->categories->pluck('id'));
-        })->where('id', '!=', $product->id)
+        $relatedProducts = ProductRepository::query()
+            ->whereHas('categories', function ($query) use ($product) {
+                $query->whereIn('categories.id', $product->categories->pluck('id'));
+            })
+            ->where('id', '!=', $product->id)
             ->isActive()
             ->inRandomOrder()
-            ->limit(6)->get();
+            ->limit(6)
+            ->get();
 
         $shop = $product->shop;
 
@@ -243,7 +258,11 @@ class ProductController extends Controller
     {
         $product = ProductRepository::find($request->product_id);
 
-        $hasReview = $product->reviews()->where('customer_id', auth()->user()->customer->id)->where('order_id', $request->order_id)->first();
+        $hasReview = $product
+            ->reviews()
+            ->where('customer_id', auth()->user()->customer->id)
+            ->where('order_id', $request->order_id)
+            ->first();
 
         if ($hasReview) {
             return $this->json('review already exists', [
@@ -262,7 +281,7 @@ class ProductController extends Controller
     {
         $page = $request->page;
         $perPage = $request->per_page;
-        $skip = ($page * $perPage) - $perPage;
+        $skip = $page * $perPage - $perPage;
 
         $search = $request->search;
         $shopID = $request->shop_id;
@@ -285,9 +304,11 @@ class ProductController extends Controller
 
         // get data for
         $rootShop = $shop ?? generaleSetting('rootShop');
-        $productQuery = ProductRepository::query()->when($shop, function ($query) use ($shop) {
-            return $query->where('shop_id', $shop->id);
-        })->isActive();
+        $productQuery = ProductRepository::query()
+            ->when($shop, function ($query) use ($shop) {
+                return $query->where('shop_id', $shop->id);
+            })
+            ->isActive();
 
         $productMinPrice = $productQuery->min('price');
         $productMaxPrice = $productQuery->max('price');
@@ -302,60 +323,77 @@ class ProductController extends Controller
             ->whereNotNull('discount_price')
             ->where('discount_price', '>', 0)
             ->orderBy('discount_price', 'desc') // ✅ Added: sort by discount price
-         ->when($shop, function ($query) use ($shop) {
+            ->when($shop, function ($query) use ($shop) {
                 return $query->where('shop_id', $shop->id);
-            })->when($shopID && !$shop, function ($query) use ($shopID) {
+            })
+            ->when($shopID && !$shop, function ($query) use ($shopID) {
                 return $query->where('shop_id', $shopID);
             })
             ->when($search, function ($query) use ($search) {
                 return $query->where(function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%')
+                    $query
+                        ->where('name', 'like', '%' . $search . '%')
                         ->orWhere('short_description', 'like', '%' . $search . '%')
                         ->orWhere('code', 'like', '%' . $search . '%');
                 });
-            })->when($brandID, function ($query) use ($brandID) {
+            })
+            ->when($brandID, function ($query) use ($brandID) {
                 return $query->where('brand_id', $brandID);
-            })->when($colorID, function ($query) use ($colorID) {
+            })
+            ->when($colorID, function ($query) use ($colorID) {
                 return $query->whereHas('colors', function ($query) use ($colorID) {
                     return $query->where('id', $colorID);
                 });
-            })->when($sizeID, function ($query) use ($sizeID) {
+            })
+            ->when($sizeID, function ($query) use ($sizeID) {
                 return $query->whereHas('sizes', function ($query) use ($sizeID) {
                     return $query->where('id', $sizeID);
                 });
-            })->when($categoryID, function ($query) use ($categoryID) {
+            })
+            ->when($categoryID, function ($query) use ($categoryID) {
                 return $query->whereHas('categories', function ($query) use ($categoryID) {
                     return $query->where('id', $categoryID);
                 });
-            })->when($subCategoryID, function ($query) use ($subCategoryID) {
+            })
+            ->when($subCategoryID, function ($query) use ($subCategoryID) {
                 $query->whereHas('subcategories', function ($query) use ($subCategoryID) {
                     return $query->where('id', $subCategoryID);
                 });
-            })->when($rating, function ($query) use ($rating) {
+            })
+            ->when($rating, function ($query) use ($rating) {
                 $ratingValue = floatval($rating);
                 $upperBound = $ratingValue + 1;
 
                 return $query->havingRaw('average_rating >= ' . $rating . ' AND average_rating < ' . $upperBound);
-            })->when($sortType == 'top_selling', function ($query) {
+            })
+            ->when($sortType == 'top_selling', function ($query) {
                 return $query->orderByDesc('orders_count');
-            })->when($sortType == 'popular_product', function ($query) {
+            })
+            ->when($sortType == 'popular_product', function ($query) {
                 return $query->orderByDesc('orders_count')->orderByDesc('average_rating');
-            })->when($sortType == 'newest' || $sortType == 'just_for_you', function ($query) {
+            })
+            ->when($sortType == 'newest' || $sortType == 'just_for_you', function ($query) {
                 return $query->orderBy('id', 'desc');
-            })->when($minPrice, function ($query) use ($minPrice) {
+            })
+            ->when($minPrice, function ($query) use ($minPrice) {
                 return $query->whereRaw('IF(discount_price > 0, discount_price, price) >= ?', [$minPrice]);
-            })->when($maxPrice, function ($query) use ($maxPrice) {
+            })
+            ->when($maxPrice, function ($query) use ($maxPrice) {
                 return $query->whereRaw('IF(discount_price > 0, discount_price, price) <= ?', [$maxPrice]);
-            })->when($sortType == 'high_to_low', function ($query) {
+            })
+            ->when($sortType == 'high_to_low', function ($query) {
                 return $query->orderByRaw('IF(discount_price > 0, discount_price, price) DESC')->orderBy('id', 'DESC');
-            })->when($sortType == 'low_to_high', function ($query) {
+            })
+            ->when($sortType == 'low_to_high', function ($query) {
                 return $query->orderByRaw('IF(discount_price > 0, discount_price, price) ASC')->orderBy('id', 'DESC');
             });
 
         $total = $products->count();
-        $products = $products->when($perPage && $page, function ($query) use ($perPage, $skip) {
-            return $query->skip($skip)->take($perPage);
-        })->get();
+        $products = $products
+            ->when($perPage && $page, function ($query) use ($perPage, $skip) {
+                return $query->skip($skip)->take($perPage);
+            })
+            ->get();
 
         return $this->json('products', [
             'total' => $total,
